@@ -1,0 +1,14 @@
+CFLAGS =  -Wall -g $(shellpkg-config --cflags)
+LDFLAGS = $(shell pkg-config allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 --libs)
+
+objs = main.o joystick.o mano.o
+
+all: $(objs)
+	gcc -o brutal $(objs) $(CFLAGS) $(LDFLAGS)
+
+main.o: main.c joystick.h mano.h
+joystick.o: joystick.c joystick.h
+mano.o: mano.c mano.h
+
+clean:
+	-rm -f $(objs)
