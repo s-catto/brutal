@@ -6,8 +6,8 @@ mano* mano_create(int width, int height,
                   int max_x, int max_y)
 {
 
-    if ((x - width/2 < 0) || (x + width/2 > max_x) || (y - height/2 < 0) 
-        || (y + height/2 > max_y)) 
+    if ((x - width/2 < 0) || (x + width/2 > max_x) || (y - height < 0) 
+        || (y > max_y)) 
         return NULL;
 
     mano *new_mano = (mano*) malloc(sizeof(mano));
@@ -15,6 +15,8 @@ mano* mano_create(int width, int height,
   	new_mano->height = height;
     new_mano->x = x;	
     new_mano->y = y;
+    new_mano->state = STAND;
+    new_mano->vy = 0;
     new_mano->control = joystick_create();
     return new_mano;
 }
@@ -30,16 +32,13 @@ void mano_move(mano *element, int steps, int trajectory,
         if ((element->x + steps*MANO_STEP) + element->width/2 <= max_x) 
             element->x = element->x + steps*MANO_STEP;
     }
-    /* mudar pra jump, o parametro tem q ser diff de steps*/
-    if (trajectory == 2){ 
-        if ((element->y - steps*MANO_STEP) - element->height/2 >= 0) 
-            element->y = element->y - steps*MANO_STEP;
-    }
-    else if (trajectory == 3){ 
-        /*aqui é agachar/ir pro chão mais rapido nn vai ser steps tbm*/
-        if ((element->y + steps*MANO_STEP) + element->height/2 <= max_y) 
-            element->y = element->y + steps*MANO_STEP;
-    }
+    else if (trajectory == 2) {
+        if ((element->vy > 0 && (element->y - element->vy * steps - element->height >= 0))
+            || (element->vy < 0 && (element->y - element->vy * steps) <= max_y)) 
+                element->y = element->y - element->vy * steps;
+        if ((element->y - element->vy * steps) > max_y)
+            element->y = max_y;
+    } 
 }
 
 void mano_destroy(mano *element){
