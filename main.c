@@ -1,11 +1,13 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
 #include <stdio.h>
 #include <stdlib.h>	
 
 #include "joystick.h"
+#include "box.h"
 #include "mano.h"
 
 /*definindo aspecto da tela 4:3*/
@@ -17,17 +19,25 @@
 #define GRAVITY -1
 
 int collision (mano* player1, mano* player2) {
-    if ((((player1->x + player1->width/2 > player2->x - player2->width/2) && 
-         (player1->x - player1->width/2 <= player2->x - player2->width/2)) 
+    if ((((player1->x + player1->coli->x + player1->coli->width/2 > 
+           player2->x + player2->coli->x - player2->coli->width/2) && 
+          (player1->x + player1->coli->x - player1->coli->width/2 <= 
+           player2->x + player2->coli->x - player2->coli->width/2)) 
         || 
-        ((player2->x + player2->width/2 > player1->x - player1->width/2) &&
-         (player2->x - player2->width/2 <= player1->x - player1->width/2)))
+        ((player2->x + player2->coli->x + player2->coli->width/2 > 
+          player1->x + player2->coli->x - player1->coli->width/2) &&
+         (player2->x + player2->coli->x - player2->coli->width/2 <= 
+          player1->x + player1->coli->x - player1->coli->width/2)))
         &&
-        (((player1->y > player2->y - player2->height) &&
-         (player1->y - player1->height <= player2->y - player2->height)) 
+        (((player1->y + player1->coli->y > 
+           player2->y + player2->coli->y - player2->coli->height) &&
+         (player1->y + player1->coli->y - player1->coli->height <= 
+          player2->y + player2->coli->y - player2->coli->height)) 
         || 
-        ((player2->y > player1->y - player1->height) &&
-         (player2->y - player2->height <= player1->y - player1->height))))
+        ((player2->y + player2->coli->y > 
+          player1->y + player1->coli->y - player1->coli->height) &&
+         (player2->y + player2->coli->y - player2->coli->height <= 
+          player1->y + player1->coli->y - player1->coli->height))))
     {return 1;}
     
     return 0;
@@ -41,7 +51,7 @@ void update_state (mano* player) {
             if (player->control->up) {
                 player->state = JUMP;
             } else if (player->control->down) {
-                player->height = player->height / 2;
+                mano_crouch(player);
                 player->state = CROUCH;
             } else if (player->control->left) {
                 if (!player->control->right)
@@ -53,19 +63,18 @@ void update_state (mano* player) {
             
         case CROUCH:
             if (!player->control->down) {
-                player->height = player->height * 2;
+                mano_uncrouch(player);
                 player->state = STAND;
             }
             break;
             
         case JUMP:
-            player->vy = 27;
-            player->y--;
+            mano_jump(player);
             player->state = AIRBORNE;
             break;
             
         case AIRBORNE:
-            if (player->y == Y_SCREEN - GROUND) {
+            if (player->y + player->coli->y == Y_SCREEN - GROUND) {
                 player->state = STAND;
                 player->vy = 0;
             }
@@ -75,7 +84,7 @@ void update_state (mano* player) {
             if (player->control->up) {
                 player->state = JUMP;
             } else if (player->control->down) {
-                player->height = player->height / 2;
+                player->coli->height = player->coli->height / 2;
                 player->state = CROUCH;
             } else if (!player->control->left || player->control->right) {
                 player->state = STAND;
@@ -86,7 +95,7 @@ void update_state (mano* player) {
             if (player->control->up) {
                 player->state = JUMP;
             } else if (player->control->down) {
-                player->height = player->height / 2;
+                player->coli->height = player->coli->height / 2;
                 player->state = CROUCH;
             } else if (!player->control->right || player->control->left) {
                 player->state = STAND;
@@ -100,6 +109,16 @@ void update_state (mano* player) {
 }
 
 void update_position (mano* player1, mano* player2) {
+    if (collision(player1, player2)) {
+        if (player1->y + player1->coli->y < player2->y + player2->coli->y) {
+            player1->y = player2->y + player2->coli->y - player2->coli->height 
+                         - player1->coli->y;
+        } else {
+            player2->y = player1->y + player1->coli->y - player1->coli->height 
+                         - player2->coli->y; 
+        }
+    }
+    
     switch (player1->state)
     {
         case WALKL:
@@ -181,6 +200,7 @@ void update_position (mano* player1, mano* player2) {
 int main(){
     al_init();	
     al_init_primitives_addon();
+    al_init_image_addon();
     
     al_install_keyboard();
 	
@@ -193,11 +213,11 @@ int main(){
     al_register_event_source(queue, al_get_display_event_source(disp));
     al_register_event_source(queue, al_get_timer_event_source(timer));
     
-    mano* player1 = mano_create(100, 325, 50, Y_SCREEN -GROUND, 
+    mano* player1 = mano_create(100, 320, 320, Y_SCREEN, 
                     X_SCREEN, Y_SCREEN);
     if (!player1)
         return 1;
-    mano* player2 = mano_create(100, 325, X_SCREEN -50, Y_SCREEN -GROUND, 
+    mano* player2 = mano_create(100, 320, X_SCREEN -320, Y_SCREEN, 
                     X_SCREEN, Y_SCREEN);
     if (!player2)
         return 2;
@@ -217,11 +237,19 @@ int main(){
 	                                 al_map_rgb(0, 255, 0));	
              
             /*posiscionando os elementos*/
-	        al_draw_filled_rectangle(player1->x-player1->width/2, player1->y-player1->height, 
-	                                 player1->x+player1->width/2, player1->y,
+	        al_draw_filled_rectangle(player1->x + player1->coli->x - player1->coli->width/2, 
+	                                 player1->y + player1->coli->y - player1->coli->height, 
+	                                 player1->x + player1->coli->x + player1->coli->width/2, 
+	                                 player1->y + player1->coli->y,
 	                                 al_map_rgb(255, 0, 0));
-            al_draw_filled_rectangle(player2->x-player2->width/2, player2->y-player2->height, 
-	                                 player2->x+player2->width/2, player2->y,
+	        al_draw_scaled_bitmap(player1->sprite, 0, 0, 64, 64, 
+	                              player1->x-player1->width/2 - 64, 
+	                              player1->y-player1->height -64, 
+	                              384, 384, 0);
+            al_draw_filled_rectangle(player2->x + player2->coli->x - player2->coli->width/2, 
+                                     player2->y + player2->coli->y - player2->coli->height, 
+	                                 player2->x + player2->coli->x + player2->coli->width/2, 
+	                                 player2->y + player2->coli->y,
 	                                 al_map_rgb(0, 0, 255));
                 
             /*update do display*/
