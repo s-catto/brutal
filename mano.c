@@ -6,9 +6,21 @@
 #include "box.h"
 #include "mano.h"
 
-mano* mano_create(int width, int height, 
+spr_settings *config_sprite(int x_L, int x_R, int cr_H, int face) {
+    spr_settings *sett = malloc(sizeof(spr_settings));
+    
+    sett->face = face;
+    sett->x_L = x_L;
+    sett->x_R = x_R;
+    sett->cr_H = cr_H;
+    
+    return sett;
+}
+
+mano* mano_create(ALLEGRO_BITMAP* sprite, int width, int height, 
                   int x, int y, 
-                  int max_x, int max_y)
+                  int max_x, int max_y,
+                  int face, int x_L, int x_R, int cr_H)
 {
 
     if ((x - width/2 < 0) || (x + width/2 > max_x) || (y - height < 0) 
@@ -21,12 +33,12 @@ mano* mano_create(int width, int height,
     new_mano->x = x;	
     new_mano->y = y;
     
-    new_mano->coli = box_create(60, -20, x, y, width+20, height, max_x, max_y);
+    new_mano->coli = box_create(60, -20, x, y, width, height, max_x, max_y);
     
     new_mano->vy = 0;
     new_mano->state = STAND;
-    
-    new_mano->sprite = al_load_bitmap(S_MAGAL_S);
+    new_mano->sprite = sprite;
+    new_mano->spr_sett = config_sprite(x_L, x_R, cr_H, face);
     
     new_mano->control = joystick_create();
     return new_mano;
@@ -58,12 +70,12 @@ void mano_move(mano *element, int steps, int trajectory,
 
 
 void mano_crouch (mano *mano) {
-    mano->coli->height = mano->coli->height / 2;
+    mano->coli->height = mano->spr_sett->cr_H;
     return;    
 }
 
 void mano_uncrouch(mano *mano) {
-    mano->coli->height = mano->coli->height * 2;
+    mano->coli->height = mano->height;
     return;
 }
 

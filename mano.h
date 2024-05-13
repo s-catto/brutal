@@ -10,6 +10,10 @@
 
 #define MANO_STEP 10
 
+/*para onde o personagem está virado*/
+#define LEFT  0
+#define RIGHT 1
+
 #define STAND       0
 #define CROUCH      2
 #define JUMP        3
@@ -19,10 +23,22 @@
 #define PUNCH       7
 #define KICK        8
 
-#define S_MAGAL_S "./sprites/sMagal/sprite_0.bmp"
-#define S_MAGAL_W "./sprites/sMagal/sprite_1.bmp"
-#define S_MAGAL_J "./sprites/sMagal/sprite_2.bmp"
-#define S_MAGAL_C "./sprites/sMagal/sprite_3.bmp"
+#define S_MAGAL_STD "./sprites/sMagal/sprite_0.png"
+#define S_MAGAL_WLK "./sprites/sMagal/sprite_1.png"
+#define S_MAGAL_JMP "./sprites/sMagal/sprite_2.png"
+#define S_MAGAL_CRH "./sprites/sMagal/sprite_3.png"
+
+#define J_THOMP_STD "./sprites/jThomp/sprite_0.png"
+#define J_THOMP_WLK "./sprites/jThomp/sprite_1.png"
+#define J_THOMP_JMP "./sprites/jThomp/sprite_2.png"
+#define J_THOMP_CRH "./sprites/jThomp/sprite_3.png"
+
+typedef struct {
+    int face;
+    int x_L;
+    int x_R;
+    int cr_H;
+} spr_settings;
 
 typedef struct {
     int width;
@@ -32,16 +48,17 @@ typedef struct {
     
     box *coli;
     ALLEGRO_BITMAP *sprite;
-    
+    spr_settings* spr_sett;
     int state;
     int vy;
     
     joystick *control;
 } mano;
 
-mano* mano_create(int width, int height, 
+mano* mano_create(ALLEGRO_BITMAP* sprite, int width, int height, 
                   int x, int y, 
-                  int max_x, int max_y);
+                  int max_x, int max_y,
+                  int face, int x_L, int x_R, int cr_H);
                   
 void mano_move(mano *element, int steps, int trajectory, int max_x, int max_y);
 

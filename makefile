@@ -9,7 +9,7 @@ all: $(objs)
 main.o: main.c joystick.h mano.h box.h
 joystick.o: joystick.c joystick.h
 mano.o: mano.c mano.h box.h
-box.o: box.c box.o
+box.o: box.c box.h
 
 clean:
 	-rm -f $(objs)
