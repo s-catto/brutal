@@ -23,16 +23,6 @@
 #define PUNCH       7
 #define KICK        8
 
-#define S_MAGAL_STD "./sprites/sMagal/sprite_0.png"
-#define S_MAGAL_WLK "./sprites/sMagal/sprite_1.png"
-#define S_MAGAL_JMP "./sprites/sMagal/sprite_2.png"
-#define S_MAGAL_CRH "./sprites/sMagal/sprite_3.png"
-
-#define J_THOMP_STD "./sprites/jThomp/sprite_0.png"
-#define J_THOMP_WLK "./sprites/jThomp/sprite_1.png"
-#define J_THOMP_JMP "./sprites/jThomp/sprite_2.png"
-#define J_THOMP_CRH "./sprites/jThomp/sprite_3.png"
-
 typedef struct {
     int face;
     int x_L;

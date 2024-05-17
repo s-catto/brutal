@@ -1,1 +1,40 @@
 oi efi :3
+
+AFAZERES BRUTAIS:
+
+--- Básicos (50pt) ---
+- Telas:
+    [X] Menu
+    [ ] Ch. Select
+    [ ] End Game
+    
+- Funcionalidades
+    [X] 2 personagens 
+        [X] sprites: em pé, andando, pulando, abaixado, ataque sup, ataque inf.
+    [/] 2 player 
+        [X] mobilidade geral
+        [ ] ataques (sup. e inf.)
+        [ ] HP
+    [ ] Melhor de 3
+    
+--- """Extras""" ---
+- Telas:
+    [ ] 2 cenários                                  10pts
+    [ ] Pause                                       5pts
+    
+- Ataques extra:
+    [ ] Ataques em pulo/ abaixado                   15pts
+    [ ] Ataques Especiais (min: 2 personagens)      15pts
+    [ ] Brutalidade (fatality)                      15pts
+    
+- Outros atributos de personagem:
+    [ ] Defesa                                      10pts
+    [ ] Stamina                                     7.5pts
+    
+- why.
+    [ ] vs. bot                                     30pts
+    
+----- LEGENDA -----
+[ ] não feito
+[/] em andamento
+[X] finalizado

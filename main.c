@@ -8,19 +8,11 @@
 
 #include "joystick.h"
 #include "box.h"
+
 #include "mano.h"
+#include "personagens.h"
 
-#define S_MAGAL_H           320
-#define S_MAGAL_CR_H        255
-#define S_MAGAL_W           120
-#define S_MAGAL_SPRX_L      230
-#define S_MAGAL_SPRX_R      -120       
-
-#define J_THOMP_H           320
-#define J_THOMP_CR_H        255
-#define J_THOMP_W           140
-#define J_THOMP_SPRX_L      240
-#define J_THOMP_SPRX_R      -120    
+#include "menu.h"
 
 #define MENU    0
 #define CHSEL   1
@@ -30,6 +22,7 @@
 /*definindo aspecto da tela 4:3*/
 #define X_SCREEN 1000
 #define Y_SCREEN ((X_SCREEN / 4) * 3)
+
 
 /*define onde os personagens "pisam"*/
 #define GROUND  20
@@ -255,133 +248,156 @@ int main(){
     al_register_event_source(queue, al_get_display_event_source(disp));
     al_register_event_source(queue, al_get_timer_event_source(timer));
     
-    ALLEGRO_BITMAP* p1_sprites[4];
-    p1_sprites[0] = al_load_bitmap(S_MAGAL_STD);
-    p1_sprites[1] = al_load_bitmap(S_MAGAL_WLK);
-    p1_sprites[2] = al_load_bitmap(S_MAGAL_JMP);
-    p1_sprites[3] = al_load_bitmap(S_MAGAL_CRH);
-    
-    mano* player1 = mano_create(p1_sprites[0], S_MAGAL_W, S_MAGAL_H, - S_MAGAL_SPRX_R, 
-           Y_SCREEN, X_SCREEN, Y_SCREEN, RIGHT, S_MAGAL_SPRX_L, S_MAGAL_SPRX_R,  S_MAGAL_CR_H);
-    if (!player1)
-        return 1;
-    
-    ALLEGRO_BITMAP* p2_sprites[4];
-    p2_sprites[0] = al_load_bitmap(J_THOMP_STD);
-    p2_sprites[1] = al_load_bitmap(J_THOMP_WLK);
-    p2_sprites[2] = al_load_bitmap(J_THOMP_JMP);
-    p2_sprites[3] = al_load_bitmap(J_THOMP_CRH);
-    
-    mano* player2 = mano_create(p2_sprites[0], J_THOMP_W, J_THOMP_H, X_SCREEN - J_THOMP_SPRX_L, 
-            Y_SCREEN, X_SCREEN, Y_SCREEN, LEFT, J_THOMP_SPRX_L, J_THOMP_SPRX_R, J_THOMP_CR_H);
-    if (!player2)
-        return 2;
-    
     ALLEGRO_EVENT event;
     al_start_timer(timer);
     al_wait_for_event(queue, &event);
-    int val_opt = 0;
+    
+    int i;
+    int trans = 0;
+    
     int tela = MENU;
+    ALLEGRO_BITMAP* menu[22];
+    
+    mano* player1 = NULL;
+    mano* player2 = NULL;
 
     while (1) {	
         switch (tela)
         {
-            case MENU:
-                al_clear_to_color(al_map_rgb(0, 255, 0));
-                al_flip_display();
-                
-                while (event.type != 42 && !val_opt) {
-                    if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+            case MENU: 
+                load_menu(menu);
+                i = 0;
+                while (event.type != 42 && !trans) {
+                    if (event.type == 30) {    
+                        al_clear_to_color(al_map_rgb(69, 75, 27));
+                        i = animate_menu(menu, 0, 9, i);
+                        al_draw_scaled_bitmap(menu[21], 0, 0, 80, 7, 
+	                                              340, Y_SCREEN - 84, 
+	                                              320, 28, 0);
+                        al_flip_display(); 
+                    }
+                    else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
                         switch (event.keyboard.keycode)
                         {
                             case ALLEGRO_KEY_ENTER:
-                                val_opt = 1;
+                                trans = 1;
                                 tela = GAME;
                             break;
                             
                             default: break;
                         }
                     }
-                    al_wait_for_event(queue, &event);       
-                }    
+                    al_wait_for_event(queue, &event); 
+                }
+                while (trans && event.type != 42) {
+                    if (event.type == 30) {
+                        al_clear_to_color(al_map_rgb(69, 75, 27));
+                        trans = animate_menu(menu, 10, 20, trans);
+                        al_flip_display(); 
+                    }      
+                    al_wait_for_event(queue, &event);
+                } 
+                destroy_menu(menu);
             break;
             case GAME:
-                /*batida do clock*/
-                if (event.type ==  30) {
-                    update_facing_dir(player1, player2);
-                    update_state(player1, p1_sprites);
-                    update_state(player2, p2_sprites);
-                    update_position(player1, player2);
+                /*load dos personagens*/
+                ALLEGRO_BITMAP* p1_sprites[4];
+                load_s_magal(p1_sprites);
+                
+                player1 = create_s_magal(0, X_SCREEN, Y_SCREEN, p1_sprites[0]);
+                if (!player1)
+                    return 1;
                     
-                    al_clear_to_color(al_map_rgb(135, 206, 250));
-                    al_draw_filled_rectangle(0, Y_SCREEN - GROUND, X_SCREEN, Y_SCREEN,
-	                                         al_map_rgb(0, 255, 0));	
-                     
-                    /*posiscionando os elementos*/
-	                al_draw_filled_rectangle(player1->x + player1->coli->x - player1->coli->width/2, 
-	                                         player1->y + player1->coli->y - player1->coli->height, 
-	                                         player1->x + player1->coli->x + player1->coli->width/2, 
-	                                         player1->y + player1->coli->y,
-	                                         al_map_rgb(255, 0, 0));
-	                if (player1->spr_sett->face == RIGHT) {
-	                    al_draw_scaled_bitmap(player1->sprite, 0, 0, 64, 64, 
-	                                          player1->x + player1->spr_sett->x_R, 
-	                                          player1->y-player1->height -64, 
-	                                          384, 384, 0);
-	                } else {
-	                    al_draw_scaled_bitmap(player1->sprite, 0, 0, 64, 64, 
-	                                          player1->x + player1->spr_sett->x_L, 
-	                                          player1->y-player1->height -64, 
-	                                          -384, 384, 0);
-	                }
-                    al_draw_filled_rectangle(player2->x + player2->coli->x - player2->coli->width/2, 
-                                             player2->y + player2->coli->y - player2->coli->height, 
-	                                         player2->x + player2->coli->x + player2->coli->width/2, 
-	                                         player2->y + player2->coli->y,
-	                                         al_map_rgb(0, 0, 255));
-	                                         
-	                if (player2->spr_sett->face == RIGHT) {
-	                    al_draw_scaled_bitmap(player2->sprite, 0, 0, 64, 64, 
-	                                          player2->x + player2->spr_sett->x_R, 
-	                                          player2->y-player2->height -64, 
-	                                          384, 384, 0);
-	                } else {
-	                    al_draw_scaled_bitmap(player2->sprite, 0, 0, 64, 64, 
-	                                          player2->x + player2->spr_sett->x_L, 
-	                                          player2->y-player2->height -64, 
-	                                          -384, 384, 0);
-	                }
+                ALLEGRO_BITMAP* p2_sprites[4];
+                load_j_thompson(p2_sprites);
+                    
+                player2 = create_j_thomp(1, X_SCREEN, Y_SCREEN, p2_sprites[0]);
+                if (!player2)
+                    return 2;    
+                
+                
+                while (event.type != 42) {        
+                    /*batida do clock*/
+                    if (event.type ==  30) {
+                        update_facing_dir(player1, player2);
+                        update_state(player1, p1_sprites);
+                        update_state(player2, p2_sprites);
+                        update_position(player1, player2);
                         
-                    /*update do display*/
-                    al_flip_display();
+                        al_clear_to_color(al_map_rgb(135, 206, 250));
+                        al_draw_filled_rectangle(0, Y_SCREEN - GROUND, X_SCREEN, Y_SCREEN,
+	                                             al_map_rgb(0, 255, 0));	
+                         
+                        /*posiscionando os elementos*/
+	                    al_draw_filled_rectangle(player1->x + player1->coli->x - player1->coli->width/2, 
+	                                             player1->y + player1->coli->y - player1->coli->height, 
+	                                             player1->x + player1->coli->x + player1->coli->width/2, 
+	                                             player1->y + player1->coli->y,
+	                                             al_map_rgb(255, 0, 0));
+	                    if (player1->spr_sett->face == RIGHT) {
+	                        al_draw_scaled_bitmap(player1->sprite, 0, 0, 64, 64, 
+	                                              player1->x + player1->spr_sett->x_R, 
+	                                              player1->y-player1->height -64, 
+	                                              384, 384, 0);
+	                    } else {
+	                        al_draw_scaled_bitmap(player1->sprite, 0, 0, 64, 64, 
+	                                              player1->x + player1->spr_sett->x_L, 
+	                                              player1->y-player1->height -64, 
+	                                              -384, 384, 0);
+	                    }
+                        al_draw_filled_rectangle(player2->x + player2->coli->x - player2->coli->width/2, 
+                                                 player2->y + player2->coli->y - player2->coli->height, 
+	                                             player2->x + player2->coli->x + player2->coli->width/2, 
+	                                             player2->y + player2->coli->y,
+	                                             al_map_rgb(0, 0, 255));
+	                                             
+	                    if (player2->spr_sett->face == RIGHT) {
+	                        al_draw_scaled_bitmap(player2->sprite, 0, 0, 64, 64, 
+	                                              player2->x + player2->spr_sett->x_R, 
+	                                              player2->y-player2->height -64, 
+	                                              384, 384, 0);
+	                    } else {
+	                        al_draw_scaled_bitmap(player2->sprite, 0, 0, 64, 64, 
+	                                              player2->x + player2->spr_sett->x_L, 
+	                                              player2->y-player2->height -64, 
+	                                              -384, 384, 0);
+	                    }
+                            
+                        /*update do display*/
+                        al_flip_display();
+                    }
+                    /*tecla pressionada/solta*/
+                    else if (event.type == ALLEGRO_EVENT_KEY_DOWN || event.type == ALLEGRO_EVENT_KEY_UP) {
+                        switch (event.keyboard.keycode)
+                        {
+                            case ALLEGRO_KEY_A: joystick_left(player1->control); break;
+                            case ALLEGRO_KEY_D: joystick_right(player1->control); break;
+                            case ALLEGRO_KEY_W: joystick_up(player1->control); break;
+                            case ALLEGRO_KEY_S: joystick_down(player1->control); break;
+                            
+                            case ALLEGRO_KEY_LEFT: joystick_left(player2->control); break;
+                            case ALLEGRO_KEY_RIGHT: joystick_right(player2->control); break;
+                            case ALLEGRO_KEY_UP: joystick_up(player2->control); break;
+                            case ALLEGRO_KEY_DOWN: joystick_down(player2->control); break;
+                            
+                            default: break;
+                        }    
+                    } 
+                    al_wait_for_event(queue, &event); 
                 }
-                /*tecla pressionada/solta*/
-                else if (event.type == ALLEGRO_EVENT_KEY_DOWN || event.type == ALLEGRO_EVENT_KEY_UP) {
-                    switch (event.keyboard.keycode)
-                    {
-                        case ALLEGRO_KEY_A: joystick_left(player1->control); break;
-                        case ALLEGRO_KEY_D: joystick_right(player1->control); break;
-                        case ALLEGRO_KEY_W: joystick_up(player1->control); break;
-                        case ALLEGRO_KEY_S: joystick_down(player1->control); break;
-                        
-                        case ALLEGRO_KEY_LEFT: joystick_left(player2->control); break;
-                        case ALLEGRO_KEY_RIGHT: joystick_right(player2->control); break;
-                        case ALLEGRO_KEY_UP: joystick_up(player2->control); break;
-                        case ALLEGRO_KEY_DOWN: joystick_down(player2->control); break;
-                        
-                        default: break;
-                    }    
-                } 
+                
+                mano_destroy(player1);
+                destroy_sprites(p1_sprites);
+                mano_destroy(player2);
+                destroy_sprites(p2_sprites);
+            
             break;
             default: return 3;
         }
-        if (event.type == 42)
-            break;
+        if (event.type == 42) break;
+        
         al_wait_for_event(queue, &event);              	
     }
-    
-    mano_destroy(player1);
-    mano_destroy(player2);
     
     al_destroy_font(font);
     al_destroy_display(disp);

@@ -41,6 +41,7 @@ mano* mano_create(ALLEGRO_BITMAP* sprite, int width, int height,
     new_mano->spr_sett = config_sprite(x_L, x_R, cr_H, face);
     
     new_mano->control = joystick_create();
+    
     return new_mano;
 }
 
