@@ -20,8 +20,10 @@
 #define AIRBORNE    4
 #define WALKL       5
 #define WALKR       6
-#define PUNCH       7
-#define KICK        8
+
+#define NONE        0
+#define PUNCH       1
+#define KICK        2
 
 typedef struct {
     int face;
@@ -37,10 +39,12 @@ typedef struct {
     int y;
     
     box *coli;
+    
     ALLEGRO_BITMAP *sprite;
     spr_settings* spr_sett;
-    int state;
+    
     int vy;
+    int state;
     
     joystick *control;
 } mano;

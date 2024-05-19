@@ -35,10 +35,11 @@ mano* mano_create(ALLEGRO_BITMAP* sprite, int width, int height,
     
     new_mano->coli = box_create(60, -20, x, y, width, height, max_x, max_y);
     
-    new_mano->vy = 0;
-    new_mano->state = STAND;
     new_mano->sprite = sprite;
     new_mano->spr_sett = config_sprite(x_L, x_R, cr_H, face);
+    
+    new_mano->vy = 0;
+    new_mano->state = STAND;
     
     new_mano->control = joystick_create();
     
@@ -53,7 +54,7 @@ void mano_move(mano *element, int steps, int trajectory,
             element->x = element->x - steps*MANO_STEP;
     }
     else if (trajectory == 1){ 
-        if ((element->x + element->coli->y + steps*MANO_STEP) + element->width/2 <= max_x)
+        if ((element->x + element->coli->x + steps*MANO_STEP) + element->width/2 <= max_x)
             element->x = element->x + steps*MANO_STEP;    
     }
     else if (trajectory == 2) {
