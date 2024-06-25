@@ -240,7 +240,7 @@ int main(){
     
     al_install_keyboard();
 	
-    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0);
+    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 10.0);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
     ALLEGRO_FONT* font = al_create_builtin_font();
     ALLEGRO_DISPLAY* disp = al_create_display(X_SCREEN, Y_SCREEN);
@@ -253,6 +253,7 @@ int main(){
     al_start_timer(timer);
     al_wait_for_event(queue, &event);
     
+    int close_display = 0;
     int tela = MENU;
     
     mano* player1 = NULL;
@@ -264,12 +265,14 @@ int main(){
         switch (tela)
         {
             case MENU: 
-                menu(queue, event, X_SCREEN, Y_SCREEN);
+                if (close_display = menu(queue, X_SCREEN, Y_SCREEN))
+                    break;
                 tela = CHSEL;
             break;
             case CHSEL:
-                ch_select(queue, event, X_SCREEN, Y_SCREEN, 
-                          p1_sprites, p2_sprites, &player1, &player2);
+                if(close_display = ch_select(queue, X_SCREEN, Y_SCREEN, 
+                          p1_sprites, p2_sprites, &player1, &player2))
+                    break;
        
                 if (!player1)
                     return 1;
@@ -353,11 +356,14 @@ int main(){
                 destroy_sprites(p1_sprites);
                 mano_destroy(player2);
                 destroy_sprites(p2_sprites);
+                
+                if (event.type == 42)
+                    close_display = 1;
             
             break;
             default: return 3;
         }
-        if (event.type == 42) break;
+        if (close_display) break;
         
         al_wait_for_event(queue, &event);              	
     }

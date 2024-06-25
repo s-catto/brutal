@@ -28,7 +28,7 @@ void load_menu (ALLEGRO_BITMAP** menu);
 
 int animate_menu (ALLEGRO_BITMAP** menu, int ini, int fim, int i);
 
-void menu (ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT event, int max_x, int max_y);
+int menu (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y);
 
 void destroy_menu (ALLEGRO_BITMAP** menu);
 

@@ -50,7 +50,9 @@ int animate_menu (ALLEGRO_BITMAP** menu, int ini, int fim, int i) {
     return i + 1;
 }
 
-void menu (ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT event, int max_x, int max_y) {
+int menu (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y) {
+    ALLEGRO_EVENT event;
+    al_wait_for_event(queue, &event);
     ALLEGRO_BITMAP* menu[22];
     load_menu(menu);
     
@@ -79,6 +81,11 @@ void menu (ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT event, int max_x, int max_y
         al_wait_for_event(queue, &event);
     } 
     destroy_menu(menu);
+    
+    if (event.type == 42)
+        return 1;
+    
+    return 0;
 }
 
 void destroy_menu (ALLEGRO_BITMAP** menu) {

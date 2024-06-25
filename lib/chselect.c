@@ -15,9 +15,12 @@ void load_chr_bitmaps(ALLEGRO_BITMAP **chrs) {
     return;
 }
 
-int ch_select (ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT event, int max_x, int max_y,
+int ch_select (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                ALLEGRO_BITMAP** p1_sprites, ALLEGRO_BITMAP** p2_sprites,
                mano** player1, mano** player2) {
+    
+    ALLEGRO_EVENT event;
+    al_wait_for_event(queue, &event);
     
     character_square ch_sq;
     load_chr_bitmaps(ch_sq.chrs);
@@ -159,6 +162,9 @@ int ch_select (ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT event, int max_x, int m
         
         *player2 = create_j_thomp(1, max_x, max_y, p2_sprites[0]);
     } 
+    
+    if (event.type == 42)
+        return 1;
     
     return 0;
 }
