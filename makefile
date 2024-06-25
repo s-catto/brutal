@@ -25,6 +25,7 @@ $(OBJ):
 
 clean:
 	-rm -f $(OBJ)/*.o
+	-rmdir obj
 	
 purge: clean
 	-rm -f brutal

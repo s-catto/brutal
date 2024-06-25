@@ -1,10 +1,11 @@
 # Executable
-brutal
+./brutal
 
 # Prerequisites
 *.d
 
 # Object files
+./obj
 *.o
 *.ko
 *.obj

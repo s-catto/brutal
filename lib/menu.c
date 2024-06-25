@@ -2,7 +2,7 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
-#include "menu.h"
+#include "../include/menu.h"
 
 void load_menu (ALLEGRO_BITMAP** menu) {
     menu[0] = al_load_bitmap(MENU0);
@@ -48,6 +48,37 @@ int animate_menu (ALLEGRO_BITMAP** menu, int ini, int fim, int i) {
         return 0;
         
     return i + 1;
+}
+
+void menu (ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_EVENT event, int max_x, int max_y) {
+    ALLEGRO_BITMAP* menu[22];
+    load_menu(menu);
+    
+    int trans = 0;
+    int i = 0;
+    while (event.type != 42 && !trans) {
+        if(event.type == 30) {    
+            al_clear_to_color(al_map_rgb(69, 75, 27));
+            i = animate_menu(menu, 0, 9, i);
+            al_draw_scaled_bitmap(menu[21], 0, 0, 80, 7, 
+	                              340, max_y - 84, 
+	                              320, 28, 0);
+            al_flip_display(); 
+        } else if (event.type == ALLEGRO_EVENT_KEY_DOWN) 
+            if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) 
+                trans = 1;
+                        
+        al_wait_for_event(queue, &event); 
+    }
+    while (trans && event.type != 42) {
+        if (event.type == 30) {
+            al_clear_to_color(al_map_rgb(69, 75, 27));
+            trans = animate_menu(menu, 10, 20, trans);
+            al_flip_display(); 
+        }      
+        al_wait_for_event(queue, &event);
+    } 
+    destroy_menu(menu);
 }
 
 void destroy_menu (ALLEGRO_BITMAP** menu) {
