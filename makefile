@@ -1,21 +1,30 @@
-CFLAGS =  -Wall -g $(shellpkg-config --cflags)
-LDFLAGS = $(shell pkg-config allegro-5 allegro_main-5 allegro_font-5 allegro_primitives-5 allegro_image-5 --libs)
+CC = gcc
+CFLAGS = -g -Wall 
 
-objs = main.o joystick.o mano.o box.o personagens.o menu.o chselect.o
+INCLUDE = ./include
+LIB = ./lib
+OBJ = ./obj
 
-all: $(objs)
-	gcc -o brutal $(objs) $(CFLAGS) $(LDFLAGS)
+ALLEGRO = `pkg-config allegro-5 allegro_main-5 allegro_primitives-5 allegro_image-5 allegro_ttf-5 --libs --cflags`
 
-main.o: main.c joystick.h box.h personagens.h mano.h menu.h chselect.h
+all: brutal
 
-personagens.o: personagens.c personagens.h mano.h
-mano.o: mano.c mano.h box.h
+brutal: main.o libed | $(OBJ)
+	$(CC) -o brutal $(OBJ)/*.o $(ALLEGRO)
 
-joystick.o: joystick.c joystick.h 
-box.o: box.c box.h
+libed: joystick.o box.o mano.o personagens.o menu.o chselect.o
 
-menu.o: menu.c menu.h
-chselect.o: chselect.c chselect.h
+main.o: main.c 
+	$(CC) -c $(CFLAGS) $< -I $(INCLUDE) -o $(OBJ)/$@ 	 
+
+%.o: $(LIB)/%.c $(INCLUDE)/%.h
+	$(CC) -c $(CFLAGS) $< -I $(INCLUDE) -o $(OBJ)/$@
+
+$(OBJ):
+	mkdir $(OBJ)
 
 clean:
-	-rm -f $(objs)
+	-rm -f $(OBJ)/*.o
+	
+purge: clean
+	-rm -f brutal

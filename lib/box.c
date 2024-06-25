@@ -6,9 +6,12 @@ box *box_create (int x, int y,
                  int w, int h, 
                  int max_x, int max_y) {   
                  
-    if ((x_ref + x- w/2 < 0) || (x_ref + x + w/2 > max_x) || (y_ref + y - h < 0) 
-        || (y_ref + y > max_y)) 
-        return NULL;
+    if (max_y > 0)
+        if ((x_ref + x- w/2 < 0) || (x_ref + x + w/2 > max_x))
+            return NULL;
+    if (max_y > 0)
+        if ((y_ref + y - h < 0) || (y_ref + y > max_y)) 
+            return NULL;
     
     box *new_box = (box*) malloc(sizeof(box));
     
