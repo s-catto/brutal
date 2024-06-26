@@ -38,13 +38,16 @@ typedef struct {
     int x;
     int y;
     
-    box *coli;
+    box *hit;
+    box *hurt;
+    int health;
     
     ALLEGRO_BITMAP *sprite;
     spr_settings* spr_sett;
     
     int vy;
     int state;
+    int attk_state;
     
     joystick *control;
 } mano;

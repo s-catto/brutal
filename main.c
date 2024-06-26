@@ -27,28 +27,28 @@
 
 /*define onde os personagens "pisam"*/
 #define GROUND  20
-#define GRAVITY -1
+#define GRAVITY -4
 
 int collision (mano* player1, mano* player2) {
-    if ((((player1->x + player1->coli->x + player1->coli->width/2 > 
-           player2->x + player2->coli->x - player2->coli->width/2) && 
-          (player1->x + player1->coli->x - player1->coli->width/2 <= 
-           player2->x + player2->coli->x - player2->coli->width/2)) 
+    if ((((player1->x + player1->hit->x + player1->hit->width/2 > 
+           player2->x + player2->hit->x - player2->hit->width/2) && 
+          (player1->x + player1->hit->x - player1->hit->width/2 <= 
+           player2->x + player2->hit->x - player2->hit->width/2)) 
         || 
-        ((player2->x + player2->coli->x + player2->coli->width/2 > 
-          player1->x + player2->coli->x - player1->coli->width/2) &&
-         (player2->x + player2->coli->x - player2->coli->width/2 <= 
-          player1->x + player1->coli->x - player1->coli->width/2)))
+        ((player2->x + player2->hit->x + player2->hit->width/2 > 
+          player1->x + player2->hit->x - player1->hit->width/2) &&
+         (player2->x + player2->hit->x - player2->hit->width/2 <= 
+          player1->x + player1->hit->x - player1->hit->width/2)))
         &&
-        (((player1->y + player1->coli->y > 
-           player2->y + player2->coli->y - player2->coli->height) &&
-         (player1->y + player1->coli->y - player1->coli->height <= 
-          player2->y + player2->coli->y - player2->coli->height)) 
+        (((player1->y + player1->hit->y > 
+           player2->y + player2->hit->y - player2->hit->height) &&
+         (player1->y + player1->hit->y - player1->hit->height <= 
+          player2->y + player2->hit->y - player2->hit->height)) 
         || 
-        ((player2->y + player2->coli->y > 
-          player1->y + player1->coli->y - player1->coli->height) &&
-         (player2->y + player2->coli->y - player2->coli->height <= 
-          player1->y + player1->coli->y - player1->coli->height))))
+        ((player2->y + player2->hit->y > 
+          player1->y + player1->hit->y - player1->hit->height) &&
+         (player2->y + player2->hit->y - player2->hit->height <= 
+          player1->y + player1->hit->y - player1->hit->height))))
     {return 1;}
     
     return 0;
@@ -103,7 +103,7 @@ void update_state (mano* player, ALLEGRO_BITMAP* sprites[4]) {
             break;
             
         case AIRBORNE:
-            if (player->y + player->coli->y == Y_SCREEN - GROUND) {
+            if (player->y + player->hit->y == Y_SCREEN - GROUND) {
                 player->sprite = sprites[0];
                 player->state = STAND;
                 player->vy = 0;
@@ -146,12 +146,12 @@ void update_state (mano* player, ALLEGRO_BITMAP* sprites[4]) {
 
 void update_position (mano* player1, mano* player2) {
     if (collision(player1, player2)) {
-        if (player1->y + player1->coli->y < player2->y + player2->coli->y) {
-            player1->y = player2->y + player2->coli->y - player2->coli->height 
-                         - player1->coli->y;
+        if (player1->y + player1->hit->y < player2->y + player2->hit->y) {
+            player1->y = player2->y + player2->hit->y - player2->hit->height 
+                         - player1->hit->y;
         } else {
-            player2->y = player1->y + player1->coli->y - player1->coli->height 
-                         - player2->coli->y; 
+            player2->y = player1->y + player1->hit->y - player1->hit->height 
+                         - player2->hit->y; 
         }
     }
     
@@ -175,7 +175,7 @@ void update_position (mano* player1, mano* player2) {
                 mano_move(player1, -1, 2, X_SCREEN, Y_SCREEN-GROUND);
                 player1->vy = 0;
             } else
-                player1->vy = player1->vy -1;
+                player1->vy = player1->vy + GRAVITY;
                 
             if (player1->control->left && !player1->control->right) {
                 mano_move(player1, 1, 0, X_SCREEN, Y_SCREEN-GROUND);
@@ -212,7 +212,7 @@ void update_position (mano* player1, mano* player2) {
                 mano_move(player2, -1, 2, X_SCREEN, Y_SCREEN-GROUND);
                 player2->vy = 0;
             } else {
-                player2->vy = player2->vy -1;
+                player2->vy = player2->vy + GRAVITY;
             }
             
             if (player2->control->left && !player2->control->right) {
@@ -233,6 +233,65 @@ void update_position (mano* player1, mano* player2) {
     return;
 }
 
+void showGame (mano* player1, mano* player2) {
+    /*provisorio, ceu e chao*/
+    al_clear_to_color(al_map_rgb(135, 206, 250));
+    al_draw_filled_rectangle(0, Y_SCREEN - GROUND, X_SCREEN, Y_SCREEN,
+                             al_map_rgb(0, 255, 0));	
+     
+    /*posiscionando os elementos*/
+    /*hitbox p1*/
+    al_draw_filled_rectangle(player1->x + player1->hit->x - player1->hit->width/2, 
+                             player1->y + player1->hit->y - player1->hit->height, 
+                             player1->x + player1->hit->x + player1->hit->width/2, 
+                             player1->y + player1->hit->y,
+                             al_map_rgb(255, 0, 0));
+    /*player1*/
+    if (player1->spr_sett->face == RIGHT) {
+        al_draw_scaled_bitmap(player1->sprite, 0, 0, 64, 64, 
+                              player1->x + player1->spr_sett->x_R, 
+                              player1->y-player1->height -64, 
+                              384, 384, 0);
+    } else {
+        al_draw_scaled_bitmap(player1->sprite, 0, 0, 64, 64, 
+                              player1->x + player1->spr_sett->x_L, 
+                              player1->y-player1->height -64, 
+                              -384, 384, 0);
+    }
+    
+    /*hitbox player2*/
+    al_draw_filled_rectangle(player2->x + player2->hit->x - player2->hit->width/2, 
+                             player2->y + player2->hit->y - player2->hit->height, 
+                             player2->x + player2->hit->x + player2->hit->width/2, 
+                             player2->y + player2->hit->y,
+                             al_map_rgb(0, 0, 255));
+                             
+    /*player 2*/
+    if (player2->spr_sett->face == RIGHT) {
+        al_draw_scaled_bitmap(player2->sprite, 0, 0, 64, 64, 
+                              player2->x + player2->spr_sett->x_R, 
+                              player2->y-player2->height -64, 
+                              384, 384, 0);
+    } else {
+        al_draw_scaled_bitmap(player2->sprite, 0, 0, 64, 64, 
+                              player2->x + player2->spr_sett->x_L, 
+                              player2->y-player2->height -64, 
+                              -384, 384, 0);
+    }
+    
+    /*barras de saude*/
+    
+    al_draw_filled_rectangle(160, 20, 490, 70, al_map_rgb(0, 0, 0));
+    al_draw_filled_rectangle(X_SCREEN -490, 20, X_SCREEN -160, 70, al_map_rgb(0, 0, 0));
+    al_draw_filled_rectangle(50, 10, 150, 110, al_map_rgb(0, 0, 0));
+    al_draw_filled_rectangle(X_SCREEN -150, 10, X_SCREEN -50, 110, al_map_rgb(0, 0, 0));
+        
+    /*update do display*/
+    al_flip_display();
+    
+    return;
+}
+
 int main(){
     al_init();	
     al_init_primitives_addon();
@@ -240,7 +299,7 @@ int main(){
     
     al_install_keyboard();
 	
-    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 10.0);
+    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
     ALLEGRO_FONT* font = al_create_builtin_font();
     ALLEGRO_DISPLAY* disp = al_create_display(X_SCREEN, Y_SCREEN);
@@ -257,21 +316,23 @@ int main(){
     int tela = MENU;
     
     mano* player1 = NULL;
-    ALLEGRO_BITMAP* p1_sprites[4];
+    ALLEGRO_BITMAP* p1_sprites[6];
     mano* player2 = NULL;
-    ALLEGRO_BITMAP* p2_sprites[4];
+    ALLEGRO_BITMAP* p2_sprites[6];
 
     while (1) {	
         switch (tela)
         {
-            case MENU: 
-                if (close_display = menu(queue, X_SCREEN, Y_SCREEN))
+            case MENU:
+                close_display = menu(queue, X_SCREEN, Y_SCREEN); 
+                if (close_display)
                     break;
                 tela = CHSEL;
             break;
             case CHSEL:
-                if(close_display = ch_select(queue, X_SCREEN, Y_SCREEN, 
-                          p1_sprites, p2_sprites, &player1, &player2))
+                close_display = ch_select(queue, X_SCREEN, Y_SCREEN, 
+                          p1_sprites, p2_sprites, &player1, &player2);
+                if(close_display)
                     break;
        
                 if (!player1)
@@ -290,49 +351,9 @@ int main(){
                         update_state(player2, p2_sprites);
                         update_position(player1, player2);
                         
-                        al_clear_to_color(al_map_rgb(135, 206, 250));
-                        al_draw_filled_rectangle(0, Y_SCREEN - GROUND, X_SCREEN, Y_SCREEN,
-	                                             al_map_rgb(0, 255, 0));	
-                         
-                        /*posiscionando os elementos*/
-	                    al_draw_filled_rectangle(player1->x + player1->coli->x - player1->coli->width/2, 
-	                                             player1->y + player1->coli->y - player1->coli->height, 
-	                                             player1->x + player1->coli->x + player1->coli->width/2, 
-	                                             player1->y + player1->coli->y,
-	                                             al_map_rgb(255, 0, 0));
-	                    if (player1->spr_sett->face == RIGHT) {
-	                        al_draw_scaled_bitmap(player1->sprite, 0, 0, 64, 64, 
-	                                              player1->x + player1->spr_sett->x_R, 
-	                                              player1->y-player1->height -64, 
-	                                              384, 384, 0);
-	                    } else {
-	                        al_draw_scaled_bitmap(player1->sprite, 0, 0, 64, 64, 
-	                                              player1->x + player1->spr_sett->x_L, 
-	                                              player1->y-player1->height -64, 
-	                                              -384, 384, 0);
-	                    }
-                        al_draw_filled_rectangle(player2->x + player2->coli->x - player2->coli->width/2, 
-                                                 player2->y + player2->coli->y - player2->coli->height, 
-	                                             player2->x + player2->coli->x + player2->coli->width/2, 
-	                                             player2->y + player2->coli->y,
-	                                             al_map_rgb(0, 0, 255));
-	                                             
-	                    if (player2->spr_sett->face == RIGHT) {
-	                        al_draw_scaled_bitmap(player2->sprite, 0, 0, 64, 64, 
-	                                              player2->x + player2->spr_sett->x_R, 
-	                                              player2->y-player2->height -64, 
-	                                              384, 384, 0);
-	                    } else {
-	                        al_draw_scaled_bitmap(player2->sprite, 0, 0, 64, 64, 
-	                                              player2->x + player2->spr_sett->x_L, 
-	                                              player2->y-player2->height -64, 
-	                                              -384, 384, 0);
-	                    }
-                            
-                        /*update do display*/
-                        al_flip_display();
+                        showGame(player1, player2);
                     }
-                    /*tecla pressionada/solta*/
+                    /*tecla pressionada ou solta*/
                     else if (event.type == ALLEGRO_EVENT_KEY_DOWN || event.type == ALLEGRO_EVENT_KEY_UP) {
                         switch (event.keyboard.keycode)
                         {

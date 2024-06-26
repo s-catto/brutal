@@ -27,6 +27,8 @@ void load_s_magal (ALLEGRO_BITMAP **p_sprites) {
     p_sprites[1] = al_load_bitmap(S_MAGAL_WLK);
     p_sprites[2] = al_load_bitmap(S_MAGAL_JMP);
     p_sprites[3] = al_load_bitmap(S_MAGAL_CRH);
+    p_sprites[4] = al_load_bitmap(S_MAGAL_PUN);
+    p_sprites[5] = al_load_bitmap(S_MAGAL_KIK);
     
     return;       
 }
@@ -53,7 +55,9 @@ void load_j_thompson (ALLEGRO_BITMAP **p_sprites) {
     p_sprites[0] = al_load_bitmap(J_THOMP_STD);
     p_sprites[1] = al_load_bitmap(J_THOMP_WLK);
     p_sprites[2] = al_load_bitmap(J_THOMP_JMP);
-    p_sprites[3] = al_load_bitmap(J_THOMP_CRH);    
+    p_sprites[3] = al_load_bitmap(J_THOMP_CRH); 
+    p_sprites[4] = al_load_bitmap(J_THOMP_PUN); 
+    p_sprites[5] = al_load_bitmap(J_THOMP_KIK);    
     
     return;
 }
