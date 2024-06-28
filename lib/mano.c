@@ -17,7 +17,8 @@ spr_settings *config_sprite(int x_L, int x_R, int cr_H, int face) {
     return sett;
 }
 
-mano* mano_create(ALLEGRO_BITMAP* sprite, int width, int height, 
+mano* mano_create(ALLEGRO_BITMAP* sq_sprite, ALLEGRO_BITMAP* sprite, char* name,
+                  int width, int height, 
                   int x, int y, 
                   int max_x, int max_y,
                   int face, int x_L, int x_R, int cr_H)
@@ -35,8 +36,10 @@ mano* mano_create(ALLEGRO_BITMAP* sprite, int width, int height,
     
     new_mano->hit = box_create(60, -20, x, y, width, height, max_x, max_y);
     new_mano->hurt = box_create(60, -20, x, y, 20, 20, max_x, max_y);
-    new_mano->health = 250;
+    new_mano->health = 100;
     
+    new_mano->name = strdup(name);
+    new_mano->sq_sprite = sq_sprite;
     new_mano->sprite = sprite;
     new_mano->spr_sett = config_sprite(x_L, x_R, cr_H, face);
     
@@ -92,5 +95,6 @@ void mano_jump (mano *mano) {
 
 void mano_destroy(mano *element){
     joystick_destroy(element->control);
+    free(element->name);
     free(element);
 }

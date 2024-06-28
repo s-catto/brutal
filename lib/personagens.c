@@ -6,15 +6,18 @@
 #include "mano.h"
 
 /* Steve Magal */
-mano* create_s_magal (int isplayer2, int max_x, int max_y, ALLEGRO_BITMAP* sprite) {
+mano* create_s_magal (int isplayer2, int max_x, int max_y, 
+                      ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite) {
     if (isplayer2) {
-        mano* player = mano_create(sprite, S_MAGAL_W, S_MAGAL_H, 
+        mano* player = mano_create(sq_sprite, sprite, "STEVE MAGAL", 
+                       S_MAGAL_W, S_MAGAL_H,
                        max_x - S_MAGAL_SPRX_L, max_y, 
                        max_x, max_y, 
                        LEFT, S_MAGAL_SPRX_L, S_MAGAL_SPRX_R, S_MAGAL_CR_H);
         return player;
     }
-    mano* player = mano_create(sprite, S_MAGAL_W, S_MAGAL_H, 
+    mano* player = mano_create(sq_sprite, sprite, "STEVE MAGAL",
+                   S_MAGAL_W, S_MAGAL_H, 
                    - S_MAGAL_SPRX_R, max_y, 
                    max_x, max_y, 
                    RIGHT, S_MAGAL_SPRX_L, S_MAGAL_SPRX_R, S_MAGAL_CR_H);
@@ -35,15 +38,18 @@ void load_s_magal (ALLEGRO_BITMAP **p_sprites) {
 
 /* Jack Thompson */
 
-mano* create_j_thomp (int isplayer2, int max_x, int max_y, ALLEGRO_BITMAP* sprite) {
+mano* create_j_thomp (int isplayer2, int max_x, int max_y, 
+                      ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite) {
     if (isplayer2) {
-        mano* player = mano_create(sprite, J_THOMP_W, J_THOMP_H, 
+        mano* player = mano_create(sq_sprite, sprite, "JACK THOMPSON",
+                       J_THOMP_W, J_THOMP_H, 
                        max_x - J_THOMP_SPRX_L, max_y, 
                        max_x, max_y, 
                        LEFT, J_THOMP_SPRX_L, J_THOMP_SPRX_R, J_THOMP_CR_H);
         return player;
     }
-    mano* player = mano_create(sprite, J_THOMP_W, J_THOMP_H, 
+    mano* player = mano_create(sq_sprite, sprite, "JACK THOMPSON", 
+                   J_THOMP_W, J_THOMP_H, 
                    - J_THOMP_SPRX_R, max_y, 
                    max_x, max_y, 
                    RIGHT, J_THOMP_SPRX_L, J_THOMP_SPRX_R, J_THOMP_CR_H);

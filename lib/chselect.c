@@ -146,21 +146,21 @@ int ch_select (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
     if (ch_sq.p1 % 10 == 0) {
         load_s_magal(p1_sprites);
         
-        *player1 = create_s_magal(0, max_x, max_y, p1_sprites[0]);
+        *player1 = create_s_magal(0, max_x, max_y, p1_sprites[0], ch_sq.chrs[0]);
     } else if (ch_sq.p1 % 10 == 1) {
         load_j_thompson(p1_sprites);
         
-        *player1 = create_j_thomp(0, max_x, max_y, p1_sprites[0]);
+        *player1 = create_j_thomp(0, max_x, max_y, p1_sprites[0], ch_sq.chrs[1]);
     }
         
     if (ch_sq.p2 % 10 == 0) {
         load_s_magal(p2_sprites);
         
-        *player2 = create_s_magal(1, max_x, max_y, p2_sprites[0]);
+        *player2 = create_s_magal(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[0]);
     } else if (ch_sq.p2 % 10 == 1) {
         load_j_thompson(p2_sprites);
         
-        *player2 = create_j_thomp(1, max_x, max_y, p2_sprites[0]);
+        *player2 = create_j_thomp(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[1]);
     } 
     
     if (event.type == 42)

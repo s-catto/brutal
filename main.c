@@ -1,5 +1,6 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
@@ -24,32 +25,80 @@
 #define X_SCREEN 1000
 #define Y_SCREEN ((X_SCREEN / 4) * 3)
 
-
 /*define onde os personagens "pisam"*/
 #define GROUND  20
 #define GRAVITY -4
 
-int collision (mano* player1, mano* player2) {
-    if ((((player1->x + player1->hit->x + player1->hit->width/2 > 
-           player2->x + player2->hit->x - player2->hit->width/2) && 
-          (player1->x + player1->hit->x - player1->hit->width/2 <= 
-           player2->x + player2->hit->x - player2->hit->width/2)) 
-        || 
-        ((player2->x + player2->hit->x + player2->hit->width/2 > 
-          player1->x + player2->hit->x - player1->hit->width/2) &&
-         (player2->x + player2->hit->x - player2->hit->width/2 <= 
-          player1->x + player1->hit->x - player1->hit->width/2)))
-        &&
-        (((player1->y + player1->hit->y > 
-           player2->y + player2->hit->y - player2->hit->height) &&
-         (player1->y + player1->hit->y - player1->hit->height <= 
-          player2->y + player2->hit->y - player2->hit->height)) 
-        || 
-        ((player2->y + player2->hit->y > 
-          player1->y + player1->hit->y - player1->hit->height) &&
-         (player2->y + player2->hit->y - player2->hit->height <= 
-          player1->y + player1->hit->y - player1->hit->height))))
-    {return 1;}
+/*definindo tipos de colisão*/
+#define NORMAL  0
+#define HIT_P1  1
+#define HIT_P2  2
+
+int collision (mano* player1, mano* player2, int tipo) {
+    if (tipo == NORMAL) {
+        if ((((player1->x + player1->hit->x + player1->hit->width/2 > 
+               player2->x + player2->hit->x - player2->hit->width/2) && 
+              (player1->x + player1->hit->x - player1->hit->width/2 <= 
+               player2->x + player2->hit->x - player2->hit->width/2)) 
+            || 
+            ((player2->x + player2->hit->x + player2->hit->width/2 > 
+              player1->x + player2->hit->x - player1->hit->width/2) &&
+             (player2->x + player2->hit->x - player2->hit->width/2 <= 
+              player1->x + player1->hit->x - player1->hit->width/2)))
+            &&
+            (((player1->y + player1->hit->y > 
+               player2->y + player2->hit->y - player2->hit->height) &&
+             (player1->y + player1->hit->y - player1->hit->height <= 
+              player2->y + player2->hit->y - player2->hit->height)) 
+            || 
+            ((player2->y + player2->hit->y > 
+              player1->y + player1->hit->y - player1->hit->height) &&
+             (player2->y + player2->hit->y - player2->hit->height <= 
+              player1->y + player1->hit->y - player1->hit->height))))
+        {return 1;}
+    } else if (tipo == HIT_P1) {
+        if ((((player1->x + player1->hit->x + player1->hit->width/2 > 
+               player2->x + player2->hurt->x - player2->hurt->width/2) && 
+              (player1->x + player1->hit->x - player1->hit->width/2 <= 
+               player2->x + player2->hurt->x - player2->hurt->width/2)) 
+            || 
+            ((player2->x + player2->hurt->x + player2->hurt->width/2 > 
+              player1->x + player2->hurt->x - player1->hit->width/2) &&
+             (player2->x + player2->hurt->x - player2->hurt->width/2 <= 
+              player1->x + player1->hit->x - player1->hit->width/2)))
+            &&
+            (((player1->y + player1->hit->y > 
+               player2->y + player2->hurt->y - player2->hurt->height) &&
+             (player1->y + player1->hit->y - player1->hit->height <= 
+              player2->y + player2->hurt->y - player2->hurt->height)) 
+            || 
+            ((player2->y + player2->hurt->y > 
+              player1->y + player1->hit->y - player1->hit->height) &&
+             (player2->y + player2->hurt->y - player2->hurt->height <= 
+              player1->y + player1->hit->y - player1->hit->height))))
+        {return 1;}          
+    } else if (tipo == HIT_P2) {
+        if ((((player1->x + player1->hurt->x + player1->hurt->width/2 > 
+               player2->x + player2->hit->x - player2->hit->width/2) && 
+              (player1->x + player1->hurt->x - player1->hurt->width/2 <= 
+               player2->x + player2->hit->x - player2->hit->width/2)) 
+            || 
+            ((player2->x + player2->hit->x + player2->hit->width/2 > 
+              player1->x + player2->hit->x - player1->hurt->width/2) &&
+             (player2->x + player2->hit->x - player2->hit->width/2 <= 
+              player1->x + player1->hurt->x - player1->hurt->width/2)))
+            &&
+            (((player1->y + player1->hurt->y > 
+               player2->y + player2->hit->y - player2->hit->height) &&
+             (player1->y + player1->hurt->y - player1->hurt->height <= 
+              player2->y + player2->hit->y - player2->hit->height)) 
+            || 
+            ((player2->y + player2->hit->y > 
+              player1->y + player1->hurt->y - player1->hurt->height) &&
+             (player2->y + player2->hit->y - player2->hit->height <= 
+              player1->y + player1->hurt->y - player1->hurt->height))))
+        {return 1;}
+    }
     
     return 0;
 }
@@ -145,7 +194,7 @@ void update_state (mano* player, ALLEGRO_BITMAP* sprites[4]) {
 }
 
 void update_position (mano* player1, mano* player2) {
-    if (collision(player1, player2)) {
+    if (collision(player1, player2, NORMAL)) {
         if (player1->y + player1->hit->y < player2->y + player2->hit->y) {
             player1->y = player2->y + player2->hit->y - player2->hit->height 
                          - player1->hit->y;
@@ -159,19 +208,19 @@ void update_position (mano* player1, mano* player2) {
     {
         case WALKL:
             mano_move(player1, 1, 0, X_SCREEN, Y_SCREEN-GROUND);
-            if (collision(player1, player2))
+            if (collision(player1, player2, NORMAL))
                 mano_move(player1, -1, 0, X_SCREEN, Y_SCREEN-GROUND);
             break;
             
         case WALKR:
             mano_move(player1, 1, 1, X_SCREEN, Y_SCREEN-GROUND);
-            if (collision(player1, player2))
+            if (collision(player1, player2, NORMAL))
                 mano_move(player1, -1, 1, X_SCREEN, Y_SCREEN-GROUND);
             break;
             
         case AIRBORNE:
             mano_move(player1, 1, 2, X_SCREEN, Y_SCREEN-GROUND);
-            if (collision(player1, player2)) {
+            if (collision(player1, player2, NORMAL)) {
                 mano_move(player1, -1, 2, X_SCREEN, Y_SCREEN-GROUND);
                 player1->vy = 0;
             } else
@@ -179,11 +228,11 @@ void update_position (mano* player1, mano* player2) {
                 
             if (player1->control->left && !player1->control->right) {
                 mano_move(player1, 1, 0, X_SCREEN, Y_SCREEN-GROUND);
-                if (collision(player1, player2))
+                if (collision(player1, player2, NORMAL))
                     mano_move(player1, -1, 0, X_SCREEN, Y_SCREEN-GROUND); 
             } else if (player1->control->right) {
                 mano_move(player1, 1, 1, X_SCREEN, Y_SCREEN-GROUND);
-                if (collision(player1, player2))
+                if (collision(player1, player2, NORMAL))
                     mano_move(player1, -1, 1, X_SCREEN, Y_SCREEN-GROUND);
             }
             
@@ -196,19 +245,19 @@ void update_position (mano* player1, mano* player2) {
     {
         case WALKL:
             mano_move(player2, 1, 0, X_SCREEN, Y_SCREEN-GROUND);
-            if (collision(player1, player2))
+            if (collision(player1, player2, NORMAL))
                 mano_move(player2, -1, 0, X_SCREEN, Y_SCREEN-GROUND);
             break;
             
         case WALKR:
             mano_move(player2, 1, 1, X_SCREEN, Y_SCREEN-GROUND);
-            if (collision(player1, player2))
+            if (collision(player1, player2, NORMAL))
                 mano_move(player2, -1, 1, X_SCREEN, Y_SCREEN-GROUND);
             break;
             
         case AIRBORNE:
             mano_move(player2, 1, 2, X_SCREEN, Y_SCREEN-GROUND);
-            if (collision(player1, player2)) {
+            if (collision(player1, player2, NORMAL)) {
                 mano_move(player2, -1, 2, X_SCREEN, Y_SCREEN-GROUND);
                 player2->vy = 0;
             } else {
@@ -217,11 +266,11 @@ void update_position (mano* player1, mano* player2) {
             
             if (player2->control->left && !player2->control->right) {
                 mano_move(player2, 1, 0, X_SCREEN, Y_SCREEN-GROUND);
-                if (collision(player1, player2))
+                if (collision(player1, player2, NORMAL))
                     mano_move(player2, -1, 0, X_SCREEN, Y_SCREEN-GROUND); 
             } else if (player2->control->right) {
                 mano_move(player2, 1, 1, X_SCREEN, Y_SCREEN-GROUND);
-                if (collision(player1, player2))
+                if (collision(player1, player2, NORMAL))
                     mano_move(player2, -1, 1, X_SCREEN, Y_SCREEN-GROUND);
             }
                 
@@ -233,7 +282,7 @@ void update_position (mano* player1, mano* player2) {
     return;
 }
 
-void showGame (mano* player1, mano* player2) {
+void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2) {
     /*provisorio, ceu e chao*/
     al_clear_to_color(al_map_rgb(135, 206, 250));
     al_draw_filled_rectangle(0, Y_SCREEN - GROUND, X_SCREEN, Y_SCREEN,
@@ -279,12 +328,40 @@ void showGame (mano* player1, mano* player2) {
                               -384, 384, 0);
     }
     
-    /*barras de saude*/
+    /*barras de saude =============================== */
+    /*PLAYER 1 ===============*/
+    /*nome*/
+    al_draw_text(font, al_map_rgb(0, 0, 0), 160, 75, ALLEGRO_ALIGN_LEFT, player1->name); 
     
-    al_draw_filled_rectangle(160, 20, 490, 70, al_map_rgb(0, 0, 0));
-    al_draw_filled_rectangle(X_SCREEN -490, 20, X_SCREEN -160, 70, al_map_rgb(0, 0, 0));
-    al_draw_filled_rectangle(50, 10, 150, 110, al_map_rgb(0, 0, 0));
-    al_draw_filled_rectangle(X_SCREEN -150, 10, X_SCREEN -50, 110, al_map_rgb(0, 0, 0));
+    /*barra saude*/
+    al_draw_filled_rectangle(160, 20, 160 + player1->health*33/10, 70, al_map_rgb(0, 255, 0));
+    /*barra borda*/
+    al_draw_rectangle(160, 20, 490, 70, al_map_rgb(204, 204, 0), 6);
+    
+    
+    /*borda foto*/
+    al_draw_filled_rectangle(45, 5, 155, 115, al_map_rgb(204, 204, 0));
+    /*fundo foto*/
+    al_draw_filled_rectangle(52, 12, 148, 108, al_map_rgb(255, 0, 0));
+    /*foto*/
+    al_draw_scaled_bitmap(player1->sq_sprite, 0, 0, 24, 24, 52, 12, 96, 96, 0);
+    
+    
+    /*PLAYER 2 ===============*/
+    /*nome*/
+    al_draw_text(font, al_map_rgb(0, 0, 0), X_SCREEN -160, 75, ALLEGRO_ALIGN_RIGHT, player2->name); 
+    
+    /*barra saude*/
+    al_draw_filled_rectangle(X_SCREEN -160 - player2->health*33/10, 20, X_SCREEN -160, 70, al_map_rgb(0, 255, 0));
+    /*barra borda*/
+    al_draw_rectangle(X_SCREEN -490, 20, X_SCREEN -160, 70, al_map_rgb(204, 204, 0), 6);
+    
+    /*borda foto*/
+    al_draw_filled_rectangle(X_SCREEN -155, 5, X_SCREEN -45, 115, al_map_rgb(204, 204, 0));
+    /*fundo foto p2*/
+    al_draw_filled_rectangle(X_SCREEN -148, 12, X_SCREEN -52, 108, al_map_rgb(0, 0, 255));
+    /*foto p2*/
+    al_draw_scaled_bitmap(player2->sq_sprite, 0, 0, 24, 24, X_SCREEN -52, 12, -96, 96, 0);    
         
     /*update do display*/
     al_flip_display();
@@ -295,14 +372,21 @@ void showGame (mano* player1, mano* player2) {
 int main(){
     al_init();	
     al_init_primitives_addon();
+    al_init_font_addon();
+    al_init_ttf_addon();
     al_init_image_addon();
     
     al_install_keyboard();
 	
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
-    ALLEGRO_FONT* font = al_create_builtin_font();
     ALLEGRO_DISPLAY* disp = al_create_display(X_SCREEN, Y_SCREEN);
+    
+    ALLEGRO_FONT* font = al_load_font("./fonts/gameboy.ttf", 20, 0);
+    if (!font) {
+      printf("Error loading ./fonts/gameboy.ttf\n");
+      return 2;
+    }
 	
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(disp));
@@ -351,7 +435,7 @@ int main(){
                         update_state(player2, p2_sprites);
                         update_position(player1, player2);
                         
-                        showGame(player1, player2);
+                        showGame(font, player1, player2);
                     }
                     /*tecla pressionada ou solta*/
                     else if (event.type == ALLEGRO_EVENT_KEY_DOWN || event.type == ALLEGRO_EVENT_KEY_UP) {

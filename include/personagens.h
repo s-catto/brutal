@@ -23,7 +23,8 @@
 #define S_MAGAL_KIK "./sprites/sMagal/sprite_KIK.png"
 
 
-mano* create_s_magal (int isplayer2, int max_x, int max_y, ALLEGRO_BITMAP* sprite);
+mano* create_s_magal (int isplayer2, int max_x, int max_y, 
+                      ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite);
 void load_s_magal (ALLEGRO_BITMAP **p_sprites);
 
 /* JACK THOMPSON */
@@ -41,7 +42,8 @@ void load_s_magal (ALLEGRO_BITMAP **p_sprites);
 #define J_THOMP_PUN "./sprites/jThomp/sprite_PUN.png"
 #define J_THOMP_KIK "./sprites/jThomp/sprite_KIK.png"
 
-mano* create_j_thomp (int isplayer2, int max_x, int max_y, ALLEGRO_BITMAP* sprite);
+mano* create_j_thomp (int isplayer2, int max_x, int max_y, 
+                      ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite);
 void load_j_thompson (ALLEGRO_BITMAP **p_sprites);
 
 

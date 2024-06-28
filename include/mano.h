@@ -42,6 +42,8 @@ typedef struct {
     box *hurt;
     int health;
     
+    char* name;
+    ALLEGRO_BITMAP *sq_sprite;
     ALLEGRO_BITMAP *sprite;
     spr_settings* spr_sett;
     
@@ -52,7 +54,8 @@ typedef struct {
     joystick *control;
 } mano;
 
-mano* mano_create(ALLEGRO_BITMAP* sprite, int width, int height, 
+mano* mano_create(ALLEGRO_BITMAP* sq_sprite, ALLEGRO_BITMAP* sprite, char* name, 
+                  int width, int height, 
                   int x, int y, 
                   int max_x, int max_y,
                   int face, int x_L, int x_R, int cr_H);
