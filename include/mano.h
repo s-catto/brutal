@@ -20,13 +20,13 @@
 #define AIRBORNE    4
 #define WALKL       5
 #define WALKR       6
+#define ATTACK      7
 
 #define NONE        0
 #define PUNCH       1
 #define KICK        2
 
 typedef struct {
-    int face;
     int x_L;
     int x_R;
     int cr_H;
@@ -43,6 +43,7 @@ typedef struct {
     int health;
     
     char* name;
+    int face;
     ALLEGRO_BITMAP *sq_sprite;
     ALLEGRO_BITMAP *sprite;
     spr_settings* spr_sett;
@@ -65,6 +66,10 @@ void mano_move(mano *element, int steps, int trajectory, int max_x, int max_y);
 void mano_crouch (mano *mano); 
 void mano_uncrouch(mano *mano);
 void mano_jump(mano* mano);
+
+void mano_punch(mano* mano);
+void mano_kick(mano* mano);
+void mano_peace(mano* mano);
   
 void mano_destroy(mano *element);
 

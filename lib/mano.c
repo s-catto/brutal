@@ -6,10 +6,9 @@
 #include "box.h"
 #include "mano.h"
 
-spr_settings *config_sprite(int x_L, int x_R, int cr_H, int face) {
+spr_settings *config_sprite(int x_L, int x_R, int cr_H) {
     spr_settings *sett = malloc(sizeof(spr_settings));
     
-    sett->face = face;
     sett->x_L = x_L;
     sett->x_R = x_R;
     sett->cr_H = cr_H;
@@ -35,13 +34,14 @@ mano* mano_create(ALLEGRO_BITMAP* sq_sprite, ALLEGRO_BITMAP* sprite, char* name,
     new_mano->y = y;
     
     new_mano->hit = box_create(60, -20, x, y, width, height, max_x, max_y);
-    new_mano->hurt = box_create(60, -20, x, y, 20, 20, max_x, max_y);
+    new_mano->hurt = box_create(60, -20, x, y, 60, 60, max_x, max_y);
     new_mano->health = 100;
     
     new_mano->name = strdup(name);
+    new_mano->face = face;
     new_mano->sq_sprite = sq_sprite;
     new_mano->sprite = sprite;
-    new_mano->spr_sett = config_sprite(x_L, x_R, cr_H, face);
+    new_mano->spr_sett = config_sprite(x_L, x_R, cr_H);
     
     new_mano->vy = 0;
     new_mano->state = STAND;
@@ -91,6 +91,34 @@ void mano_jump (mano *mano) {
     mano->vy = 54;
     mano->y--;
     return;
+}
+
+
+void mano_punch(mano* mano) {
+    if (mano->face == RIGHT) {
+        mano->hurt->x = 240;
+    } else {
+        mano->hurt->x = -120;
+    }
+    mano->hurt->y = -mano->height/2;
+    
+    return; 
+}
+void mano_kick(mano* mano) {
+    if (mano->face == RIGHT) {
+        mano->hurt->x = 200;
+    } else {
+        mano->hurt->x = -80;
+    }
+    mano->hurt->y = mano->hit->y;
+    
+    return; 
+}
+void mano_peace(mano* mano) {
+    mano->hurt->x = mano->hit->x;
+    mano->hurt->y = mano->hit->y; 
+    
+    return; 
 }
 
 void mano_destroy(mano *element){

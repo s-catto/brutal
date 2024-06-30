@@ -33,7 +33,9 @@ int ch_select (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
     ch_sq.p1 = 0;
     ch_sq.p2 = 1;
     
-    while (event.type != 42 && (ch_sq.p1 < 10 || ch_sq.p2 < 10)) {
+    int selected = 0;
+    
+    while (event.type != 42 && !selected) {
         if (event.type == 30) {
             al_clear_to_color(al_map_rgb(69, 75, 27));
             
@@ -83,15 +85,6 @@ int ch_select (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                         }
                 break;
                 
-                case ALLEGRO_KEY_U:
-                    if (ch_sq.p1 < 10)
-                        ch_sq.p1 = ch_sq.p1 + 10;   
-                break;
-                case ALLEGRO_KEY_I:
-                    if (ch_sq.p1 >= 10)
-                        ch_sq.p1 = ch_sq.p1 - 10;   
-                break;
-                
                 
                 case ALLEGRO_KEY_LEFT: 
                     if (ch_sq.p2 < 10)
@@ -126,13 +119,8 @@ int ch_select (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                         }
                 break;
                 
-                case ALLEGRO_KEY_PAD_4:
-                    if (ch_sq.p2 < 10)
-                        ch_sq.p2 = ch_sq.p2 + 10;   
-                break;
-                case ALLEGRO_KEY_PAD_5:
-                    if (ch_sq.p2 >= 10)
-                        ch_sq.p2 = ch_sq.p2 - 10;   
+                case ALLEGRO_KEY_ENTER: 
+                    selected = 1;
                 break;
                 
                 default: break;
@@ -143,21 +131,21 @@ int ch_select (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
     }
     
      /*load dos personagens*/
-    if (ch_sq.p1 % 10 == 0) {
+    if (ch_sq.p1 == 0) {
         load_s_magal(p1_sprites);
         
         *player1 = create_s_magal(0, max_x, max_y, p1_sprites[0], ch_sq.chrs[0]);
-    } else if (ch_sq.p1 % 10 == 1) {
+    } else if (ch_sq.p1 == 1) {
         load_j_thompson(p1_sprites);
         
         *player1 = create_j_thomp(0, max_x, max_y, p1_sprites[0], ch_sq.chrs[1]);
     }
         
-    if (ch_sq.p2 % 10 == 0) {
+    if (ch_sq.p2 == 0) {
         load_s_magal(p2_sprites);
         
         *player2 = create_s_magal(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[0]);
-    } else if (ch_sq.p2 % 10 == 1) {
+    } else if (ch_sq.p2 == 1) {
         load_j_thompson(p2_sprites);
         
         *player2 = create_j_thomp(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[1]);

@@ -6,15 +6,15 @@ AFAZERES BRUTAIS:
 - Telas:
     [X] Menu
     [X] Ch. Select (eh, i mean, it works)
-    [ ] End Game
+    [/] End Game
     
 - Funcionalidades
     [X] 2 personagens 
         [X] sprites: em pé, andando, pulando, abaixado, ataque sup, ataque inf.
-    [/] 2 player 
+    [X] 2 player 
         [X] mobilidade geral
-        [/] ataques (sup. e inf.)
-        [/] HP
+        [X] ataques (sup. e inf.)
+        [X] HP
     [ ] Melhor de 3
     
 --- """Extras""" ---

@@ -105,42 +105,52 @@ int collision (mano* player1, mano* player2, int tipo) {
 
 void update_facing_dir (mano* p1, mano* p2) {
     if (p1->x > p2->x) {
-        p1->spr_sett->face = LEFT;
-        p2->spr_sett->face = RIGHT;
+        p1->face = LEFT;
+        p2->face = RIGHT;
         return;
     }
     
-    p1->spr_sett->face = RIGHT;
-    p2->spr_sett->face = LEFT;
+    p1->face = RIGHT;
+    p2->face = LEFT;
     
     return;
 }
 
-void update_state (mano* player, ALLEGRO_BITMAP* sprites[4]) {
+void update_state (mano* player, ALLEGRO_BITMAP* sprites[6]) {
     switch (player->state)
     {
         case STAND:
             if (player->control->up) {
-                player->sprite = sprites[2];
+                player->sprite = sprites[JMP];
                 player->state = JUMP;
             } else if (player->control->down) {
-                player->sprite = sprites[3];
+                player->sprite = sprites[CRH];
                 mano_crouch(player);
                 player->state = CROUCH;
+            } else if (player->control->punch) {
+                player->sprite = sprites[PUN];
+                mano_punch(player);
+                player->state = ATTACK;
+                player->attk_state = PUNCH;
+            } else if (player->control->kick) {
+                player->sprite = sprites[KIK];
+                mano_kick(player);
+                player->state = ATTACK;
+                player->attk_state = KICK;    
             } else if (player->control->left) {
                 if (!player->control->right) {
-                    player->sprite = sprites[1];
+                    player->sprite = sprites[WLK];
                     player->state = WALKL;
                 }
             } else if (player->control->right) {
-                player->sprite = sprites[1];
+                player->sprite = sprites[WLK];
                 player->state = WALKR;
             }
             break;
             
         case CROUCH:
             if (!player->control->down) {    
-                player->sprite = sprites[0];
+                player->sprite = sprites[STD];
                 mano_uncrouch(player);
                 player->state = STAND;
             }
@@ -153,39 +163,94 @@ void update_state (mano* player, ALLEGRO_BITMAP* sprites[4]) {
             
         case AIRBORNE:
             if (player->y + player->hit->y == Y_SCREEN - GROUND) {
-                player->sprite = sprites[0];
+                player->sprite = sprites[STD];
                 player->state = STAND;
                 player->vy = 0;
             }
             break;
             
         case WALKL:
-            if (player->control->up) {
-                player->sprite = sprites[2];
+            if (player->control->punch) {
+                player->sprite = sprites[PUN];
+                mano_punch(player);
+                player->state = ATTACK;
+                player->attk_state = PUNCH;
+            } else if (player->control->kick) {
+                player->sprite = sprites[KIK];
+                mano_kick(player);
+                player->state = ATTACK;
+                player->attk_state = KICK;    
+            } else if (player->control->up) {
+                player->sprite = sprites[JMP];
                 player->state = JUMP;
             } else if (player->control->down) {
-                player->sprite = sprites[3];
+                player->sprite = sprites[CRH];
                 mano_crouch(player);
                 player->state = CROUCH;
             } else if (!player->control->left || player->control->right) {
-                player->sprite = sprites[0];
+                player->sprite = sprites[STD];
                 player->state = STAND;
-            }
+            } 
             break;
         
         case WALKR:
-            if (player->control->up) {
-                player->sprite = sprites[2];
+            if (player->control->punch) {
+                player->sprite = sprites[PUN];
+                mano_punch(player);
+                player->state = ATTACK;
+                player->attk_state = PUNCH;
+            } else if (player->control->kick) {
+                player->sprite = sprites[KIK];
+                mano_kick(player);
+                player->state = ATTACK;
+                player->attk_state = KICK;    
+            } else if (player->control->up) {
+                player->sprite = sprites[JMP];
                 player->state = JUMP;
             } else if (player->control->down) {
-                player->sprite = sprites[3];
+                player->sprite = sprites[CRH];
                 mano_crouch(player);
                 player->state = CROUCH;
             } else if (!player->control->right || player->control->left) {
-                player->sprite = sprites[0];
+                player->sprite = sprites[STD];
                 player->state = STAND;
             }
             break; 
+            
+        case ATTACK:
+            if (player->attk_state == PUNCH) {
+                if (player->control->kick) {
+                    player->sprite = sprites[KIK];
+                    mano_kick(player);
+                    player->attk_state = KICK;
+                    break;
+                } else if (player->control->punch) break;
+            } else {
+                if (player->control->punch) {
+                    player->sprite = sprites[PUN];
+                    mano_punch(player);
+                    player->attk_state = PUNCH;
+                    break;
+                } else if (player->control->kick) break;
+            }
+             
+            player->attk_state = NONE;
+            mano_peace(player);
+             
+            if (player->control->up) {
+                player->sprite = sprites[JMP];
+                player->state = JUMP;
+            } else if (player->control->down) {
+                player->sprite = sprites[CRH];
+                mano_crouch(player);
+                player->state = CROUCH;
+            } else {
+                player->sprite = sprites[STD];
+                player->state = STAND;
+            }
+            
+            break;
+        
         
         default: break;
     }
@@ -282,6 +347,18 @@ void update_position (mano* player1, mano* player2) {
     return;
 }
 
+void update_health (mano* player1, mano* player2) {
+    if (collision(player1, player2, HIT_P1)) {
+        player1->health = player1->health - 2;
+    }
+    
+    if (collision(player1, player2, HIT_P2)) {
+        player2->health = player2->health - 2;
+    }
+    
+    return;
+}
+
 void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2) {
     /*provisorio, ceu e chao*/
     al_clear_to_color(al_map_rgb(135, 206, 250));
@@ -295,8 +372,9 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2) {
                              player1->x + player1->hit->x + player1->hit->width/2, 
                              player1->y + player1->hit->y,
                              al_map_rgb(255, 0, 0));
+    
     /*player1*/
-    if (player1->spr_sett->face == RIGHT) {
+    if (player1->face == RIGHT) {
         al_draw_scaled_bitmap(player1->sprite, 0, 0, 64, 64, 
                               player1->x + player1->spr_sett->x_R, 
                               player1->y-player1->height -64, 
@@ -308,15 +386,24 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2) {
                               -384, 384, 0);
     }
     
+    /*hurtbox player2*/
+    al_draw_filled_rectangle(player1->x + player1->hurt->x - player1->hurt->width/2, 
+                             player1->y + player1->hurt->y - player1->hurt->height, 
+                             player1->x + player1->hurt->x + player1->hurt->width/2, 
+                             player1->y + player1->hurt->y,
+                             al_map_rgb(255, 0, 255));
+    
     /*hitbox player2*/
     al_draw_filled_rectangle(player2->x + player2->hit->x - player2->hit->width/2, 
                              player2->y + player2->hit->y - player2->hit->height, 
                              player2->x + player2->hit->x + player2->hit->width/2, 
                              player2->y + player2->hit->y,
                              al_map_rgb(0, 0, 255));
+                            
+    
                              
     /*player 2*/
-    if (player2->spr_sett->face == RIGHT) {
+    if (player2->face == RIGHT) {
         al_draw_scaled_bitmap(player2->sprite, 0, 0, 64, 64, 
                               player2->x + player2->spr_sett->x_R, 
                               player2->y-player2->height -64, 
@@ -327,6 +414,13 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2) {
                               player2->y-player2->height -64, 
                               -384, 384, 0);
     }
+    
+    /*hurtbox player2*/
+    al_draw_filled_rectangle(player2->x + player2->hurt->x - player2->hurt->width/2, 
+                             player2->y + player2->hurt->y - player2->hurt->height, 
+                             player2->x + player2->hurt->x + player2->hurt->width/2, 
+                             player2->y + player2->hurt->y,
+                             al_map_rgb(255, 0, 255));
     
     /*barras de saude =============================== */
     /*PLAYER 1 ===============*/
@@ -398,6 +492,7 @@ int main(){
     
     int close_display = 0;
     int tela = MENU;
+    int over = 0;
     
     mano* player1 = NULL;
     ALLEGRO_BITMAP* p1_sprites[6];
@@ -427,15 +522,20 @@ int main(){
                 tela = GAME;  
             break;
             case GAME:
-                while (event.type != 42) {        
+                over = 0;
+                while (event.type != 42 && !over) {        
                     /*batida do clock*/
                     if (event.type ==  30) {
                         update_facing_dir(player1, player2);
                         update_state(player1, p1_sprites);
                         update_state(player2, p2_sprites);
                         update_position(player1, player2);
+                        update_health(player1, player2);
                         
                         showGame(font, player1, player2);
+                        
+                        if (player1->health <= 0 || player2->health <= 0)
+                            over = 1;
                     }
                     /*tecla pressionada ou solta*/
                     else if (event.type == ALLEGRO_EVENT_KEY_DOWN || event.type == ALLEGRO_EVENT_KEY_UP) {
@@ -446,10 +546,17 @@ int main(){
                             case ALLEGRO_KEY_W: joystick_up(player1->control); break;
                             case ALLEGRO_KEY_S: joystick_down(player1->control); break;
                             
+                            case ALLEGRO_KEY_U: joystick_punch(player1->control); break;
+                            case ALLEGRO_KEY_I: joystick_kick(player1->control); break;
+                            
+                            
                             case ALLEGRO_KEY_LEFT: joystick_left(player2->control); break;
                             case ALLEGRO_KEY_RIGHT: joystick_right(player2->control); break;
                             case ALLEGRO_KEY_UP: joystick_up(player2->control); break;
                             case ALLEGRO_KEY_DOWN: joystick_down(player2->control); break;
+                            
+                            case ALLEGRO_KEY_PAD_4: joystick_punch(player2->control); break;
+                            case ALLEGRO_KEY_PAD_5: joystick_kick(player2->control); break;
                             
                             default: break;
                         }    
@@ -457,14 +564,20 @@ int main(){
                     al_wait_for_event(queue, &event); 
                 }
                 
-                mano_destroy(player1);
-                destroy_sprites(p1_sprites);
-                mano_destroy(player2);
-                destroy_sprites(p2_sprites);
+                if (over) {
+                    mano_destroy(player1);
+                    destroy_sprites(p1_sprites);
+                    mano_destroy(player2);
+                    destroy_sprites(p2_sprites);
+                    
+                    tela = OVER;
+                }
                 
                 if (event.type == 42)
                     close_display = 1;
             
+            case OVER:
+                tela = MENU;
             break;
             default: return 3;
         }
