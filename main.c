@@ -501,6 +501,19 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP 
     return;
 }
 
+void showOver(ALLEGRO_FONT *font, ALLEGRO_BITMAP *game_over) {    
+    al_clear_to_color(al_map_rgb(0, 0, 0));
+    
+    al_draw_scaled_bitmap(game_over, 0, 0, 230, 89, 155, 0, 690, 267, 0);  
+    al_draw_text(font, al_map_rgb(255, 219, 0), 500, Y_SCREEN - 124, ALLEGRO_ALIGN_CENTER, "RETURN TO MENU");  
+    al_draw_text(font, al_map_rgb(255, 219, 0), 500, Y_SCREEN - 84, ALLEGRO_ALIGN_CENTER, "PRESS ENTER");  
+    
+    /*update do display*/
+    al_flip_display();
+    
+    return;
+}
+
 int main(){
     al_init();	
     al_init_primitives_addon();
@@ -532,8 +545,8 @@ int main(){
     int tela = MENU;
     int round_over = 0;
     
-    ALLEGRO_BITMAP *sprok_pt;
-    sprok_pt = al_load_bitmap("./sprites/sprok_pt.png");
+    ALLEGRO_BITMAP *sprok_pt = al_load_bitmap("./sprites/sprok_pt.png");
+    ALLEGRO_BITMAP *game_over = al_load_bitmap("./sprites/game_over.png");
     
     mano* player1 = NULL;
     ALLEGRO_BITMAP* p1_sprites[6];
@@ -627,7 +640,21 @@ int main(){
                 }
             break;
             case OVER:
-                tela = MENU;
+                while (event.type != 42 && tela == OVER) {
+                    if (event.type == 30) {
+                        showOver(font, game_over);
+                    } else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+                        if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) 
+                            tela = MENU;
+                    }
+                    al_wait_for_event(queue, &event); 
+                }
+                
+                if (event.type == 42) {
+                    close_display = 1; 
+                    break;
+                }
+                
             break;
             default: return 3;
         }
@@ -637,6 +664,7 @@ int main(){
     }
     
     al_destroy_bitmap(sprok_pt);
+    al_destroy_bitmap(game_over);
     al_destroy_font(font);
     al_destroy_display(disp);
     al_destroy_timer(timer);
