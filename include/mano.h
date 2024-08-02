@@ -37,10 +37,12 @@ typedef struct {
     int height;
     int x;
     int y;
+    int ini_x;
     
     box *hit;
     box *hurt;
     int health;
+    int wins;
     
     char* name;
     int face;

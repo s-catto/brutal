@@ -359,7 +359,32 @@ void update_health (mano* player1, mano* player2) {
     return;
 }
 
-void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2) {
+void reset (mano* player1, mano* player2) {
+    /*reset health*/
+    player1->health = 100;
+    player2->health = 100;
+    
+    /*reset position and facing direction*/
+    player1->x = player1->ini_x;
+    player1->y = Y_SCREEN;
+    player2->x = player2->ini_x;
+    player2->y = Y_SCREEN;
+    update_facing_dir(player1, player2);
+    
+    /*reset hurtbox, hitbox height and state*/
+    mano_peace(player1);
+    mano_peace(player2);
+    mano_uncrouch(player1);
+    mano_uncrouch(player2);
+    player1->state = STAND;
+    player2->state = STAND;
+    player1->attk_state = NONE;
+    player2->attk_state = NONE;
+    player1->vy = 0;
+    player2->vy = 0;
+}
+
+void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP *sprok_pt) {
     /*provisorio, ceu e chao*/
     al_clear_to_color(al_map_rgb(135, 206, 250));
     al_draw_filled_rectangle(0, Y_SCREEN - GROUND, X_SCREEN, Y_SCREEN,
@@ -440,7 +465,12 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2) {
     /*foto*/
     al_draw_scaled_bitmap(player1->sq_sprite, 0, 0, 24, 24, 52, 12, 96, 96, 0);
     
-    
+    /* pontos */
+    if (player1->wins > 0) {
+        al_draw_scaled_bitmap(sprok_pt, 0, 0, 4, 6, 160, 100, 24, 36, 0);
+        if (player1->wins > 1)
+            al_draw_scaled_bitmap(sprok_pt, 0, 0, 4, 6, 190, 100, 24, 36, 0);   
+    }    
     /*PLAYER 2 ===============*/
     /*nome*/
     al_draw_text(font, al_map_rgb(0, 0, 0), X_SCREEN -160, 75, ALLEGRO_ALIGN_RIGHT, player2->name); 
@@ -450,12 +480,20 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2) {
     /*barra borda*/
     al_draw_rectangle(X_SCREEN -490, 20, X_SCREEN -160, 70, al_map_rgb(204, 204, 0), 6);
     
+    
     /*borda foto*/
     al_draw_filled_rectangle(X_SCREEN -155, 5, X_SCREEN -45, 115, al_map_rgb(204, 204, 0));
     /*fundo foto p2*/
     al_draw_filled_rectangle(X_SCREEN -148, 12, X_SCREEN -52, 108, al_map_rgb(0, 0, 255));
     /*foto p2*/
     al_draw_scaled_bitmap(player2->sq_sprite, 0, 0, 24, 24, X_SCREEN -52, 12, -96, 96, 0);    
+    /* pontos */
+    if (player2->wins > 0) {
+        al_draw_scaled_bitmap(sprok_pt, 0, 0, 4, 6, X_SCREEN -184, 100, 24, 36, 0);
+        if (player2->wins > 1)
+            al_draw_scaled_bitmap(sprok_pt, 0, 0, 4, 6, X_SCREEN -154, 100, 24, 36, 0);    
+    }    
+       
         
     /*update do display*/
     al_flip_display();
@@ -492,7 +530,10 @@ int main(){
     
     int close_display = 0;
     int tela = MENU;
-    int over = 0;
+    int round_over = 0;
+    
+    ALLEGRO_BITMAP *sprok_pt;
+    sprok_pt = al_load_bitmap("./sprites/sprok_pt.png");
     
     mano* player1 = NULL;
     ALLEGRO_BITMAP* p1_sprites[6];
@@ -522,8 +563,8 @@ int main(){
                 tela = GAME;  
             break;
             case GAME:
-                over = 0;
-                while (event.type != 42 && !over) {        
+                round_over = 0;
+                while (event.type != 42 && !round_over) {        
                     /*batida do clock*/
                     if (event.type ==  30) {
                         update_facing_dir(player1, player2);
@@ -532,10 +573,16 @@ int main(){
                         update_position(player1, player2);
                         update_health(player1, player2);
                         
-                        showGame(font, player1, player2);
+                        showGame(font, player1, player2, sprok_pt);
                         
-                        if (player1->health <= 0 || player2->health <= 0)
-                            over = 1;
+                        if (player1->health <= 0) {
+                            player2->wins++;
+                            round_over = 1;
+                        } else if (player2->health <= 0) {
+                            player1->wins++;
+                            round_over = 1;
+                            
+                        }
                     }
                     /*tecla pressionada ou solta*/
                     else if (event.type == ALLEGRO_EVENT_KEY_DOWN || event.type == ALLEGRO_EVENT_KEY_UP) {
@@ -564,18 +611,21 @@ int main(){
                     al_wait_for_event(queue, &event); 
                 }
                 
-                if (over) {
+                if (round_over) 
+                    reset(player1, player2);
+                
+                if (player1->wins > 1 || player2->wins > 1 || event.type == 42) {
                     mano_destroy(player1);
                     destroy_sprites(p1_sprites);
                     mano_destroy(player2);
                     destroy_sprites(p2_sprites);
                     
                     tela = OVER;
+                    
+                    if (event.type == 42)
+                        close_display = 1;
                 }
-                
-                if (event.type == 42)
-                    close_display = 1;
-            
+            break;
             case OVER:
                 tela = MENU;
             break;
@@ -586,6 +636,7 @@ int main(){
         al_wait_for_event(queue, &event);              	
     }
     
+    al_destroy_bitmap(sprok_pt);
     al_destroy_font(font);
     al_destroy_display(disp);
     al_destroy_timer(timer);

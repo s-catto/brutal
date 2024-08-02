@@ -32,10 +32,12 @@ mano* mano_create(ALLEGRO_BITMAP* sq_sprite, ALLEGRO_BITMAP* sprite, char* name,
   	new_mano->height = height;
     new_mano->x = x;	
     new_mano->y = y;
+    new_mano->ini_x = x;
     
     new_mano->hit = box_create(60, -20, x, y, width, height, max_x, max_y);
     new_mano->hurt = box_create(60, -20, x, y, 60, 60, max_x, max_y);
     new_mano->health = 100;
+    new_mano->wins = 0;
     
     new_mano->name = strdup(name);
     new_mano->face = face;
