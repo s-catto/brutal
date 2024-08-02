@@ -1,4 +1,6 @@
 #include <allegro5/allegro5.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
@@ -15,9 +17,9 @@ void load_chr_bitmaps(ALLEGRO_BITMAP **chrs) {
     return;
 }
 
-int ch_select (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
+int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                ALLEGRO_BITMAP** p1_sprites, ALLEGRO_BITMAP** p2_sprites,
-               mano** player1, mano** player2) {
+               mano** player1, mano** player2, int bot) {
     
     ALLEGRO_EVENT event;
     al_wait_for_event(queue, &event);
@@ -46,7 +48,12 @@ int ch_select (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
             al_draw_scaled_bitmap(ch_sq.chrs[1], 0, 0, 24, 24, SQ2_X1, SQ2_Y1, 120, 120, 0);
             al_draw_filled_rectangle( SQ3_X1, SQ3_Y1, SQ3_X2, SQ3_Y2, ch_sq.cores[2]);
             al_draw_filled_rectangle( SQ4_X1, SQ4_Y1, SQ4_X2, SQ4_Y2, ch_sq.cores[3]);
-               
+            
+            if (bot) {
+                al_draw_text(font, al_map_rgb(0, 255, 0), 500, max_y - 124, ALLEGRO_ALIGN_CENTER, "BOT");
+            } else {
+                al_draw_text(font, al_map_rgb(0, 0, 0), 500, max_y - 124, ALLEGRO_ALIGN_CENTER, "BOT");
+            }   
             al_flip_display();
         }
         if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
@@ -117,6 +124,10 @@ int ch_select (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                             ch_sq.p2 = ch_sq.p2 + 2; 
                             ch_sq.cores[ch_sq.p2] = COR_P2;
                         }
+                break;
+                
+                case ALLEGRO_KEY_B: 
+                    bot = bot ^ 1;
                 break;
                 
                 case ALLEGRO_KEY_ENTER: 

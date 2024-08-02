@@ -45,9 +45,9 @@ typedef struct {
 
 void load_chr_bitmaps(ALLEGRO_BITMAP **chrs);
 
-int ch_select (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
+int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                ALLEGRO_BITMAP** p1_sprites, ALLEGRO_BITMAP** p2_sprites,
-               mano** player1, mano** player2);
+               mano** player1, mano** player2, int bot);
 
 void destroy_chr_bitmaps(ALLEGRO_BITMAP **chrs);
 

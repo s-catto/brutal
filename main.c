@@ -552,6 +552,7 @@ int main(){
     ALLEGRO_BITMAP* p1_sprites[6];
     mano* player2 = NULL;
     ALLEGRO_BITMAP* p2_sprites[6];
+    int bot = 0;
 
     while (1) {	
         switch (tela)
@@ -563,8 +564,8 @@ int main(){
                 tela = CHSEL;
             break;
             case CHSEL:
-                close_display = ch_select(queue, X_SCREEN, Y_SCREEN, 
-                          p1_sprites, p2_sprites, &player1, &player2);
+                close_display = ch_select(font, queue, X_SCREEN, Y_SCREEN, 
+                          p1_sprites, p2_sprites, &player1, &player2, bot);
                 if(close_display)
                     break;
        
