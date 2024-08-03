@@ -19,7 +19,7 @@ void load_chr_bitmaps(ALLEGRO_BITMAP **chrs) {
 
 int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                ALLEGRO_BITMAP** p1_sprites, ALLEGRO_BITMAP** p2_sprites,
-               mano** player1, mano** player2, int bot) {
+               mano** player1, mano** player2, int bot, ALLEGRO_BITMAP** cenario) {
     
     ALLEGRO_EVENT event;
     al_wait_for_event(queue, &event);
@@ -36,6 +36,7 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
     ch_sq.p2 = 1;
     
     int selected = 0;
+    int sel_cen = 0;
     
     while (event.type != 42 && !selected) {
         if (event.type == 30) {
@@ -49,10 +50,19 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
             al_draw_filled_rectangle( SQ3_X1, SQ3_Y1, SQ3_X2, SQ3_Y2, ch_sq.cores[2]);
             al_draw_filled_rectangle( SQ4_X1, SQ4_Y1, SQ4_X2, SQ4_Y2, ch_sq.cores[3]);
             
-            if (bot) {
-                al_draw_text(font, al_map_rgb(0, 255, 0), 500, max_y - 124, ALLEGRO_ALIGN_CENTER, "BOT");
+            if (sel_cen == S_CASA) {
+                al_draw_text(font, al_map_rgb(0, 0, 0), 500, max_y - 164, ALLEGRO_ALIGN_CENTER, "CASA DO JOREL");   
+            } else if (sel_cen == S_LOCA) {
+                al_draw_text(font, al_map_rgb(0, 0, 0), 500, max_y - 164, ALLEGRO_ALIGN_CENTER, "ULTIMA VIDEOLOCADORA DO MUNDO");
             } else {
-                al_draw_text(font, al_map_rgb(0, 0, 0), 500, max_y - 124, ALLEGRO_ALIGN_CENTER, "BOT");
+                al_draw_text(font, al_map_rgb(0, 0, 0), 500, max_y - 164, ALLEGRO_ALIGN_CENTER, "LOJA DE DISCOS DO REGINALDO");
+            }
+            
+            
+            if (bot) {
+                al_draw_text(font, al_map_rgb(0, 255, 0), 500, max_y - 124, ALLEGRO_ALIGN_CENTER, "STEVE MAGAL DO FUTURO");
+            } else {
+                al_draw_text(font, al_map_rgb(0, 0, 0), 500, max_y - 124, ALLEGRO_ALIGN_CENTER, "STEVE MAGAL DO FUTURO");
             }   
             al_flip_display();
         }
@@ -130,6 +140,10 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
                     bot = bot ^ 1;
                 break;
                 
+                case ALLEGRO_KEY_C:
+                    sel_cen = (sel_cen + 1) % 3;
+                break; 
+                
                 case ALLEGRO_KEY_ENTER: 
                     selected = 1;
                 break;
@@ -161,6 +175,16 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
         
         *player2 = create_j_thomp(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[1]);
     } 
+    
+    /*load do cenário*/
+    
+    if (sel_cen == S_CASA) {
+        *cenario = al_load_bitmap(CASA);
+    } else if (sel_cen == S_LOCA) {
+        *cenario = al_load_bitmap(LOCA);
+    } else {
+        *cenario = al_load_bitmap(LOJA);
+    }
     
     if (event.type == 42)
         return 1;

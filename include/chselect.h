@@ -4,6 +4,14 @@
 #define CH_S_MAGAL  "./sprites/ch_sel/s_magal.png"
 #define CH_J_THOMP  "./sprites/ch_sel/j_thomp.png"
 
+#define CASA "./sprites/cenarios/casa.jpg"
+#define LOCA "./sprites/cenarios/locadora.jpg"
+#define LOJA "./sprites/cenarios/loja_de_discos.jpg"
+
+#define S_CASA 0
+#define S_LOCA 1
+#define S_LOJA 2
+
 #define COR_P1      (al_map_rgb(255, 0, 0))
 #define COR_P2      (al_map_rgb(0, 0, 255))
 #define COR_UNSEL   (al_map_rgb(127, 127, 127))
@@ -47,7 +55,7 @@ void load_chr_bitmaps(ALLEGRO_BITMAP **chrs);
 
 int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                ALLEGRO_BITMAP** p1_sprites, ALLEGRO_BITMAP** p2_sprites,
-               mano** player1, mano** player2, int bot);
+               mano** player1, mano** player2, int bot, ALLEGRO_BITMAP** cenario);
 
 void destroy_chr_bitmaps(ALLEGRO_BITMAP **chrs);
 

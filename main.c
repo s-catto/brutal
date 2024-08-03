@@ -384,11 +384,9 @@ void reset (mano* player1, mano* player2) {
     player2->vy = 0;
 }
 
-void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP *sprok_pt) {
+void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP *sprok_pt, ALLEGRO_BITMAP* cenario) {
     /*provisorio, ceu e chao*/
-    al_clear_to_color(al_map_rgb(135, 206, 250));
-    al_draw_filled_rectangle(0, Y_SCREEN - GROUND, X_SCREEN, Y_SCREEN,
-                             al_map_rgb(0, 255, 0));	
+    al_draw_scaled_bitmap(cenario, 0, 0, 832, 624, 0,0, 1000, 750, 0);
      
     /*posiscionando os elementos*/
     /*hitbox p1*/
@@ -501,12 +499,15 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP 
     return;
 }
 
-void showOver(ALLEGRO_FONT *font, ALLEGRO_BITMAP *game_over) {    
+void showOver(ALLEGRO_FONT *font, ALLEGRO_BITMAP *game_over, char* winner) {    
     al_clear_to_color(al_map_rgb(0, 0, 0));
     
-    al_draw_scaled_bitmap(game_over, 0, 0, 230, 89, 155, 0, 690, 267, 0);  
-    al_draw_text(font, al_map_rgb(255, 219, 0), 500, Y_SCREEN - 124, ALLEGRO_ALIGN_CENTER, "RETURN TO MENU");  
-    al_draw_text(font, al_map_rgb(255, 219, 0), 500, Y_SCREEN - 84, ALLEGRO_ALIGN_CENTER, "PRESS ENTER");  
+    al_draw_scaled_bitmap(game_over, 0, 0, 230, 89, 155, 0, 690, 267, 0);
+    
+    al_draw_text(font, al_map_rgb(255, 219, 0), 500, 350, ALLEGRO_ALIGN_CENTER, winner);
+    al_draw_text(font, al_map_rgb(255, 219, 0), 500, 370, ALLEGRO_ALIGN_CENTER, "WINS");
+       
+    al_draw_text(font, al_map_rgb(255, 96, 0), 500, Y_SCREEN - 84, ALLEGRO_ALIGN_CENTER, "PRESS ENTER");  
     
     /*update do display*/
     al_flip_display();
@@ -544,8 +545,10 @@ int main(){
     int close_display = 0;
     int tela = MENU;
     int round_over = 0;
+    char* winner;
     
     ALLEGRO_BITMAP *sprok_pt = al_load_bitmap("./sprites/sprok_pt.png");
+    ALLEGRO_BITMAP *cenario;
     ALLEGRO_BITMAP *game_over = al_load_bitmap("./sprites/game_over.png");
     
     mano* player1 = NULL;
@@ -565,7 +568,8 @@ int main(){
             break;
             case CHSEL:
                 close_display = ch_select(font, queue, X_SCREEN, Y_SCREEN, 
-                          p1_sprites, p2_sprites, &player1, &player2, bot);
+                          p1_sprites, p2_sprites, &player1, &player2, bot, &cenario);
+                
                 if(close_display)
                     break;
        
@@ -587,7 +591,7 @@ int main(){
                         update_position(player1, player2);
                         update_health(player1, player2);
                         
-                        showGame(font, player1, player2, sprok_pt);
+                        showGame(font, player1, player2, sprok_pt, cenario);
                         
                         if (player1->health <= 0) {
                             player2->wins++;
@@ -629,27 +633,39 @@ int main(){
                     reset(player1, player2);
                 
                 if (player1->wins > 1 || player2->wins > 1 || event.type == 42) {
+                    if (player1->wins > 1) {
+                        winner = strdup(player1->name);
+                    } else {
+                        winner = strdup(player2->name);
+                    }
+                    
                     mano_destroy(player1);
                     destroy_sprites(p1_sprites);
                     mano_destroy(player2);
                     destroy_sprites(p2_sprites);
                     
+                    al_destroy_bitmap(cenario);
+                    
                     tela = OVER;
                     
-                    if (event.type == 42)
+                    if (event.type == 42) {
+                        free(winner);
                         close_display = 1;
+                    }
                 }
             break;
             case OVER:
                 while (event.type != 42 && tela == OVER) {
                     if (event.type == 30) {
-                        showOver(font, game_over);
+                        showOver(font, game_over, winner);
                     } else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
                         if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) 
                             tela = MENU;
                     }
                     al_wait_for_event(queue, &event); 
                 }
+                
+                free(winner);
                 
                 if (event.type == 42) {
                     close_display = 1; 
