@@ -1,12 +1,13 @@
 oi efi :3
 
+TOTAL ATUAL: 50 + 10 = 60
 AFAZERES BRUTAIS:
 
 --- Básicos (50pt) ---
 - Telas:
     [X] Menu
     [X] Ch. Select (eh, i mean, it works)
-    [x] End Game
+    [X] End Game
     
 - Funcionalidades
     [X] 2 personagens 
@@ -15,11 +16,11 @@ AFAZERES BRUTAIS:
         [X] mobilidade geral
         [X] ataques (sup. e inf.)
         [X] HP
-    [x] Melhor de 3
+    [X] Melhor de 3
     
 --- """Extras""" ---
 - Telas:
-    [ ] 2 cenários                                  10pts
+    [X] 2 cenários                                  10pts
     [/] Pause                                       5pts
         - pensei em como fazer
     
@@ -38,7 +39,7 @@ AFAZERES BRUTAIS:
     [ ] +2                                          15pts
 
 - why.
-    [ ] vs. bot                                     30pts
+    [/] vs. bot                                     30pts
     
 ----- LEGENDA -----
 [ ] não feito
