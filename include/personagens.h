@@ -63,6 +63,23 @@ mano* create_m_tostx (int isplayer2, int max_x, int max_y,
                       ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite);
 void load_mwv_tostex (ALLEGRO_BITMAP **p_sprites);
 
+#define P_RAMBO_H           320
+#define P_RAMBO_CR_H        255
+#define P_RAMBO_W           120
+#define P_RAMBO_SPRX_L      260
+#define P_RAMBO_SPRX_R      -140
+
+#define P_RAMBO_STD "./sprites/pRambozo/sprite_STD.png"
+#define P_RAMBO_WLK "./sprites/pRambozo/sprite_WLK.png"
+#define P_RAMBO_JMP "./sprites/pRambozo/sprite_JMP.png"
+#define P_RAMBO_CRH "./sprites/pRambozo/sprite_CRH.png"
+#define P_RAMBO_PUN "./sprites/pRambozo/sprite_PUN.png"
+#define P_RAMBO_KIK "./sprites/pRambozo/sprite_KIK.png"
+
+mano* create_p_rambo (int isplayer2, int max_x, int max_y, 
+                      ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite);
+void load_p_rambozo (ALLEGRO_BITMAP **p_sprites);
+
 /* geral */
 
 #define STD 0

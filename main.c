@@ -385,16 +385,16 @@ void reset (mano* player1, mano* player2) {
 }
 
 void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP *sprok_pt, ALLEGRO_BITMAP* cenario) {
-    /*provisorio, ceu e chao*/
+    /*cenario*/
     al_draw_scaled_bitmap(cenario, 0, 0, 832, 624, 0,0, 1000, 750, 0);
      
     /*posiscionando os elementos*/
-    /*hitbox p1*/
+    /*hitbox p1
     al_draw_filled_rectangle(player1->x + player1->hit->x - player1->hit->width/2, 
                              player1->y + player1->hit->y - player1->hit->height, 
                              player1->x + player1->hit->x + player1->hit->width/2, 
                              player1->y + player1->hit->y,
-                             al_map_rgb(255, 0, 0));
+                             al_map_rgb(255, 0, 0)); */
     
     /*player1*/
     if (player1->face == RIGHT) {
@@ -409,19 +409,19 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP 
                               -384, 384, 0);
     }
     
-    /*hurtbox player2*/
+    /*hurtbox player1
     al_draw_filled_rectangle(player1->x + player1->hurt->x - player1->hurt->width/2, 
                              player1->y + player1->hurt->y - player1->hurt->height, 
                              player1->x + player1->hurt->x + player1->hurt->width/2, 
                              player1->y + player1->hurt->y,
                              al_map_rgb(255, 0, 255));
     
-    /*hitbox player2*/
+    hitbox player2
     al_draw_filled_rectangle(player2->x + player2->hit->x - player2->hit->width/2, 
                              player2->y + player2->hit->y - player2->hit->height, 
                              player2->x + player2->hit->x + player2->hit->width/2, 
                              player2->y + player2->hit->y,
-                             al_map_rgb(0, 0, 255));
+                             al_map_rgb(0, 0, 255)); */
                             
     
                              
@@ -438,12 +438,12 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP 
                               -384, 384, 0);
     }
     
-    /*hurtbox player2*/
+    /*hurtbox player2
     al_draw_filled_rectangle(player2->x + player2->hurt->x - player2->hurt->width/2, 
                              player2->y + player2->hurt->y - player2->hurt->height, 
                              player2->x + player2->hurt->x + player2->hurt->width/2, 
                              player2->y + player2->hurt->y,
-                             al_map_rgb(255, 0, 255));
+                             al_map_rgb(255, 0, 255)); */
     
     /*barras de saude =============================== */
     /*PLAYER 1 ===============*/
@@ -505,9 +505,9 @@ void showOver(ALLEGRO_FONT *font, ALLEGRO_BITMAP *game_over, char* winner) {
     al_draw_scaled_bitmap(game_over, 0, 0, 230, 89, 155, 0, 690, 267, 0);
     
     al_draw_text(font, al_map_rgb(255, 219, 0), 500, 350, ALLEGRO_ALIGN_CENTER, winner);
-    al_draw_text(font, al_map_rgb(255, 219, 0), 500, 370, ALLEGRO_ALIGN_CENTER, "WINS");
+    al_draw_text(font, al_map_rgb(255, 219, 0), 500, 370, ALLEGRO_ALIGN_CENTER, "GANHOU");
        
-    al_draw_text(font, al_map_rgb(255, 96, 0), 500, Y_SCREEN - 84, ALLEGRO_ALIGN_CENTER, "PRESS ENTER");  
+    al_draw_text(font, al_map_rgb(255, 96, 0), 500, Y_SCREEN - 84, ALLEGRO_ALIGN_CENTER, "APERTE ENTER");  
     
     /*update do display*/
     al_flip_display();

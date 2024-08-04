@@ -13,6 +13,7 @@
 void load_chr_bitmaps(ALLEGRO_BITMAP **chrs) {
     chrs[0] = al_load_bitmap(CH_S_MAGAL); 
     chrs[1] = al_load_bitmap(CH_J_THOMP); 
+    chrs[2] = al_load_bitmap(CH_P_RAMBO);
     chrs[3] = al_load_bitmap(CH_M_TOSTX);  
     
     return;
@@ -49,6 +50,7 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
             al_draw_filled_rectangle( SQ2_X1, SQ2_Y1, SQ2_X2, SQ2_Y2, ch_sq.cores[1]);
             al_draw_scaled_bitmap(ch_sq.chrs[1], 0, 0, 24, 24, SQ2_X1, SQ2_Y1, 120, 120, 0);
             al_draw_filled_rectangle( SQ3_X1, SQ3_Y1, SQ3_X2, SQ3_Y2, ch_sq.cores[2]);
+            al_draw_scaled_bitmap(ch_sq.chrs[2], 0, 0, 24, 24, SQ3_X1, SQ3_Y1, 120, 120, 0);
             al_draw_filled_rectangle( SQ4_X1, SQ4_Y1, SQ4_X2, SQ4_Y2, ch_sq.cores[3]);
             al_draw_scaled_bitmap(ch_sq.chrs[3], 0, 0, 24, 24, SQ4_X1, SQ4_Y1, 120, 120, 0);
             
@@ -166,6 +168,10 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
         load_j_thompson(p1_sprites);
         
         *player1 = create_j_thomp(0, max_x, max_y, p1_sprites[0], ch_sq.chrs[1]);
+    } else if (ch_sq.p1 == 2) {
+        load_p_rambozo(p1_sprites);
+        
+        *player1 = create_p_rambo(0, max_x, max_y, p1_sprites[0], ch_sq.chrs[2]);
     } else if (ch_sq.p1 == 3) {
         load_mwv_tostex(p1_sprites);
         
@@ -180,6 +186,10 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
         load_j_thompson(p2_sprites);
         
         *player2 = create_j_thomp(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[1]);
+    } else if (ch_sq.p2 == 2) {
+        load_p_rambozo(p2_sprites);
+        
+        *player2 = create_p_rambo(0, max_x, max_y, p2_sprites[0], ch_sq.chrs[2]);
     } else if (ch_sq.p2 == 3) {
         load_mwv_tostex(p2_sprites);
         
