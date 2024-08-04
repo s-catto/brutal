@@ -46,6 +46,22 @@ mano* create_j_thomp (int isplayer2, int max_x, int max_y,
                       ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite);
 void load_j_thompson (ALLEGRO_BITMAP **p_sprites);
 
+#define M_TOSTX_H           320
+#define M_TOSTX_CR_H        255
+#define M_TOSTX_W           120
+#define M_TOSTX_SPRX_L      260
+#define M_TOSTX_SPRX_R      -140
+
+#define M_TOSTX_STD "./sprites/mwvTostex/sprite_STD.png"
+#define M_TOSTX_WLK "./sprites/mwvTostex/sprite_WLK.png"
+#define M_TOSTX_JMP "./sprites/mwvTostex/sprite_JMP.png"
+#define M_TOSTX_CRH "./sprites/mwvTostex/sprite_CRH.png"
+#define M_TOSTX_PUN "./sprites/mwvTostex/sprite_PUN.png"
+#define M_TOSTX_KIK "./sprites/mwvTostex/sprite_KIK.png"
+
+mano* create_m_tostx (int isplayer2, int max_x, int max_y, 
+                      ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite);
+void load_mwv_tostex (ALLEGRO_BITMAP **p_sprites);
 
 /* geral */
 

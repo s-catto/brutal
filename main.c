@@ -629,8 +629,10 @@ int main(){
                     al_wait_for_event(queue, &event); 
                 }
                 
-                if (round_over) 
+                if (round_over) {
                     reset(player1, player2);
+                    al_flush_event_queue(queue);
+                }
                 
                 if (player1->wins > 1 || player2->wins > 1 || event.type == 42) {
                     if (player1->wins > 1) {
@@ -653,6 +655,7 @@ int main(){
                         close_display = 1;
                     }
                 }
+                   
             break;
             case OVER:
                 while (event.type != 42 && tela == OVER) {

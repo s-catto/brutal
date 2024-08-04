@@ -66,6 +66,37 @@ void load_j_thompson (ALLEGRO_BITMAP **p_sprites) {
     p_sprites[5] = al_load_bitmap(J_THOMP_KIK);    
     
     return;
+} 
+
+/* Microwave Tostex */
+
+mano* create_m_tostx (int isplayer2, int max_x, int max_y, 
+                      ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite) {
+    if (isplayer2) {
+        mano* player = mano_create(sq_sprite, sprite, "MICROWAVE TOSTEX",
+                       M_TOSTX_W, M_TOSTX_H, 
+                       max_x - M_TOSTX_SPRX_L, max_y, 
+                       max_x, max_y, 
+                       LEFT, M_TOSTX_SPRX_L, M_TOSTX_SPRX_R, M_TOSTX_CR_H);
+        return player;
+    }
+    mano* player = mano_create(sq_sprite, sprite, "MICROWAVE TOSTEX", 
+                   M_TOSTX_W, M_TOSTX_H, 
+                   - M_TOSTX_SPRX_R, max_y, 
+                   max_x, max_y, 
+                   RIGHT, M_TOSTX_SPRX_L, M_TOSTX_SPRX_R, M_TOSTX_CR_H);
+    
+    return player;                     
+}
+void load_mwv_tostex (ALLEGRO_BITMAP **p_sprites) {
+    p_sprites[0] = al_load_bitmap(M_TOSTX_STD);
+    p_sprites[1] = al_load_bitmap(M_TOSTX_WLK);
+    p_sprites[2] = al_load_bitmap(M_TOSTX_JMP);
+    p_sprites[3] = al_load_bitmap(M_TOSTX_CRH); 
+    p_sprites[4] = al_load_bitmap(M_TOSTX_PUN); 
+    p_sprites[5] = al_load_bitmap(M_TOSTX_KIK);    
+    
+    return;    
 }
 
 /* geral */

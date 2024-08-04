@@ -3,6 +3,7 @@
 
 #define CH_S_MAGAL  "./sprites/ch_sel/s_magal.png"
 #define CH_J_THOMP  "./sprites/ch_sel/j_thomp.png"
+#define CH_M_TOSTX  "./sprites/ch_sel/m_tostx.png"
 
 #define CASA "./sprites/cenarios/casa.jpg"
 #define LOCA "./sprites/cenarios/locadora.jpg"
