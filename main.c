@@ -20,7 +20,8 @@
 #define MENU    0
 #define CHSEL   1
 #define GAME    2
-#define OVER    3
+#define PAUSE   3
+#define OVER    4
 
 /*definindo aspecto da tela 4:3*/
 #define X_SCREEN 1000
@@ -129,6 +130,8 @@ void update_facing_dir (mano* p1, mano* p2) {
 }
 
 void update_state (mano* player, ALLEGRO_BITMAP* sprites[6]) {
+    if (player->cont < 0)
+        player->cont++;
     switch (player->state)
     {
         case STAND:
@@ -140,15 +143,21 @@ void update_state (mano* player, ALLEGRO_BITMAP* sprites[6]) {
                 mano_crouch(player);
                 player->state = CROUCH;
             } else if (player->control->punch) {
-                player->sprite = sprites[PUN];
-                mano_punch(player);
-                player->state = ATTACK;
-                player->attk_state = PUNCH;
+                if (player->cont == 0) {
+                    player->sprite = sprites[PUN];
+                    mano_punch(player);
+                    player->cont = 7;
+                    player->state = ATTACK;
+                    player->attk_state = PUNCH;
+                }
             } else if (player->control->kick) {
-                player->sprite = sprites[KIK];
-                mano_kick(player);
-                player->state = ATTACK;
-                player->attk_state = KICK;    
+                 if (player->cont == 0) {
+                    player->sprite = sprites[KIK];
+                    mano_kick(player);
+                    player->cont = 7;
+                    player->state = ATTACK;
+                    player->attk_state = KICK; 
+                 }   
             } else if (player->control->left) {
                 if (!player->control->right) {
                     player->sprite = sprites[WLK];
@@ -183,15 +192,21 @@ void update_state (mano* player, ALLEGRO_BITMAP* sprites[6]) {
             
         case WALKL:
             if (player->control->punch) {
-                player->sprite = sprites[PUN];
-                mano_punch(player);
-                player->state = ATTACK;
-                player->attk_state = PUNCH;
+                if (player->cont == 0) {
+                    player->sprite = sprites[PUN];
+                    mano_punch(player);
+                    player->cont = 7;
+                    player->state = ATTACK;
+                    player->attk_state = PUNCH;
+                }
             } else if (player->control->kick) {
-                player->sprite = sprites[KIK];
-                mano_kick(player);
-                player->state = ATTACK;
-                player->attk_state = KICK;    
+                if (player->cont == 0) {
+                    player->sprite = sprites[KIK];
+                    mano_kick(player);
+                    player->cont = 7;
+                    player->state = ATTACK;
+                    player->attk_state = KICK;   
+                } 
             } else if (player->control->up) {
                 player->sprite = sprites[JMP];
                 player->state = JUMP;
@@ -207,15 +222,21 @@ void update_state (mano* player, ALLEGRO_BITMAP* sprites[6]) {
         
         case WALKR:
             if (player->control->punch) {
-                player->sprite = sprites[PUN];
-                mano_punch(player);
-                player->state = ATTACK;
-                player->attk_state = PUNCH;
+                if (player->cont == 0) {
+                    player->sprite = sprites[PUN];
+                    mano_punch(player);
+                    player->cont = 7;
+                    player->state = ATTACK;
+                    player->attk_state = PUNCH;
+                }
             } else if (player->control->kick) {
-                player->sprite = sprites[KIK];
-                mano_kick(player);
-                player->state = ATTACK;
-                player->attk_state = KICK;    
+                if (player->cont == 0) {
+                    player->sprite = sprites[KIK];
+                    mano_kick(player);
+                    player->cont = 7;
+                    player->state = ATTACK;
+                    player->attk_state = KICK; 
+                }   
             } else if (player->control->up) {
                 player->sprite = sprites[JMP];
                 player->state = JUMP;
@@ -230,37 +251,25 @@ void update_state (mano* player, ALLEGRO_BITMAP* sprites[6]) {
             break; 
             
         case ATTACK:
-            if (player->attk_state == PUNCH) {
-                if (player->control->kick) {
-                    player->sprite = sprites[KIK];
-                    mano_kick(player);
-                    player->attk_state = KICK;
-                    break;
-                } else if (player->control->punch) break;
-            } else {
-                if (player->control->punch) {
-                    player->sprite = sprites[PUN];
-                    mano_punch(player);
-                    player->attk_state = PUNCH;
-                    break;
-                } else if (player->control->kick) break;
-            }
+            if (player->cont < 1) {
+                player->cont = -10;
              
-            player->attk_state = NONE;
-            mano_peace(player);
-             
-            if (player->control->up) {
-                player->sprite = sprites[JMP];
-                player->state = JUMP;
-            } else if (player->control->down) {
-                player->sprite = sprites[CRH];
-                mano_crouch(player);
-                player->state = CROUCH;
-            } else {
-                player->sprite = sprites[STD];
-                player->state = STAND;
+                player->attk_state = NONE;
+                mano_peace(player);
+                 
+                if (player->control->up) {
+                    player->sprite = sprites[JMP];
+                    player->state = JUMP;
+                } else if (player->control->down) {
+                    player->sprite = sprites[CRH];
+                    mano_crouch(player);
+                    player->state = CROUCH;
+                } else {
+                    player->sprite = sprites[STD];
+                    player->state = STAND;
+                }
             }
-            
+            player->cont--;
             break;
         
         
@@ -371,7 +380,7 @@ void update_health (mano* player1, mano* player2) {
     return;
 }
 
-void update_bot (mano* player1, mano* player2, int cont) {
+void update_bot (mano* player1, mano* player2) {
     if (collision(player1, player2, -1)) {
         if (player2->x - 0 < X_SCREEN - player2->x && player2->x >= player1->x) {
             if (player2->control->left)
@@ -421,16 +430,16 @@ void update_bot (mano* player1, mano* player2, int cont) {
         }
     } else {  
         if (player2->control->punch) {
-            if (!(cont % 11))
+            if (!(rand() % 11))
                 joystick_punch(player2->control);
         } else if (player2->control->kick){
-            if (!(cont % 11))
+            if (!(rand() % 11))
                 joystick_kick(player2->control);
         } else if (player2->control->up){
-            if (!(cont % 7))
+            if (!(rand() % 7))
                 joystick_up(player2->control);
         } else {
-            if (!(cont % 11))
+            if (!(rand() % 11))
                 joystick_down(player2->control);   
         }
     }
@@ -438,7 +447,7 @@ void update_bot (mano* player1, mano* player2, int cont) {
     return;
 }
 
-void reset (mano* player1, mano* player2) {
+void reset (mano* player1, ALLEGRO_BITMAP* sprite1, mano* player2, ALLEGRO_BITMAP* sprite2) {
     /*reset health*/
     player1->health = 100;
     player2->health = 100;
@@ -450,17 +459,25 @@ void reset (mano* player1, mano* player2) {
     player2->y = Y_SCREEN;
     update_facing_dir(player1, player2);
     
-    /*reset hurtbox, hitbox height and state*/
+    /*reset hurtbox*/ 
     mano_peace(player1);
     mano_peace(player2);
+    
+    /*reset hitbox height*/ 
     mano_uncrouch(player1);
     mano_uncrouch(player2);
+    
+    /*reset state*/
     player1->state = STAND;
     player2->state = STAND;
     player1->attk_state = NONE;
     player2->attk_state = NONE;
+    player1->sprite = sprite1;
+    player2->sprite = sprite2;
     player1->vy = 0;
     player2->vy = 0;
+    player1->cont = 0;
+    player2->cont = 0;
     
     joystick_reset(player1->control);
     joystick_reset(player2->control);
@@ -469,16 +486,11 @@ void reset (mano* player1, mano* player2) {
 }
 
 void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP *sprok_pt, ALLEGRO_BITMAP* cenario) {
+    
     /*cenario*/
     al_draw_scaled_bitmap(cenario, 0, 0, 832, 624, 0,0, 1000, 750, 0);
      
     /*posiscionando os elementos*/
-    /*hitbox p1
-    al_draw_filled_rectangle(player1->x + player1->hit->x - player1->hit->width/2, 
-                             player1->y + player1->hit->y - player1->hit->height, 
-                             player1->x + player1->hit->x + player1->hit->width/2, 
-                             player1->y + player1->hit->y,
-                             al_map_rgb(255, 0, 0)); */
     
     /*player1*/
     if (player1->face == RIGHT) {
@@ -492,20 +504,6 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP 
                               player1->y-player1->height -64, 
                               -384, 384, 0);
     }
-    
-    /*hurtbox player1
-    al_draw_filled_rectangle(player1->x + player1->hurt->x - player1->hurt->width/2, 
-                             player1->y + player1->hurt->y - player1->hurt->height, 
-                             player1->x + player1->hurt->x + player1->hurt->width/2, 
-                             player1->y + player1->hurt->y,
-                             al_map_rgb(255, 0, 255));
-    
-    hitbox player2
-    al_draw_filled_rectangle(player2->x + player2->hit->x - player2->hit->width/2, 
-                             player2->y + player2->hit->y - player2->hit->height, 
-                             player2->x + player2->hit->x + player2->hit->width/2, 
-                             player2->y + player2->hit->y,
-                             al_map_rgb(0, 0, 255)); */
                             
     
                              
@@ -521,13 +519,6 @@ void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP 
                               player2->y-player2->height -64, 
                               -384, 384, 0);
     }
-    
-    /*hurtbox player2
-    al_draw_filled_rectangle(player2->x + player2->hurt->x - player2->hurt->width/2, 
-                             player2->y + player2->hurt->y - player2->hurt->height, 
-                             player2->x + player2->hurt->x + player2->hurt->width/2, 
-                             player2->y + player2->hurt->y,
-                             al_map_rgb(255, 0, 255)); */
     
     /*barras de saude =============================== */
     /*PLAYER 1 ===============*/
@@ -626,15 +617,16 @@ int main(){
     al_start_timer(timer);
     al_wait_for_event(queue, &event);
     srand(time(0));
-    int cont = rand() % 71;
     
     int close_display = 0;
     int tela = MENU;
     int round_over = 0;
+    int pause = 0;
     char* winner;
     
     ALLEGRO_BITMAP *sprok_pt = al_load_bitmap("./sprites/sprok_pt.png");
     ALLEGRO_BITMAP *cenario;
+    ALLEGRO_BITMAP *pause_text = al_load_bitmap("./sprites/pause.png");
     ALLEGRO_BITMAP *game_over = al_load_bitmap("./sprites/game_over.png");
     
     mano* player1 = NULL;
@@ -666,14 +658,14 @@ int main(){
                     
                 tela = GAME;  
             break;
-            case GAME:
+            case GAME:    
                 round_over = 0;
-                while (event.type != 42 && !round_over) {        
+                pause = 0;
+                while (event.type != 42 && !round_over && !pause) {  
                     /*batida do clock*/
                     if (event.type ==  30) {
-                        cont++;
                         if (bot) 
-                             update_bot(player1, player2, cont);
+                        update_bot(player1, player2);
                         update_facing_dir(player1, player2);
                         update_state(player1, p1_sprites);
                         update_state(player2, p2_sprites);
@@ -692,7 +684,7 @@ int main(){
                         }
                     }
                     /*tecla pressionada ou solta*/
-                    else if (event.type == ALLEGRO_EVENT_KEY_DOWN || event.type == ALLEGRO_EVENT_KEY_UP) {
+                    else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
                         switch (event.keyboard.keycode)
                         {
                             case ALLEGRO_KEY_A: joystick_left(player1->control); break;
@@ -702,6 +694,8 @@ int main(){
                             
                             case ALLEGRO_KEY_U: joystick_punch(player1->control); break;
                             case ALLEGRO_KEY_I: joystick_kick(player1->control); break;
+                            
+                            default: break;
                         }
                         
                         if (!bot) { 
@@ -718,13 +712,46 @@ int main(){
                                 default: break;
                             }  
                         }  
-                    } 
+                        
+                        if (event.keyboard.keycode == ALLEGRO_KEY_P) {
+                            pause = 1;
+                            tela = PAUSE;
+                        }
+                    } else if (event.type == ALLEGRO_EVENT_KEY_UP) {
+                        switch (event.keyboard.keycode)
+                        {
+                            case ALLEGRO_KEY_A: joystick_unleft(player1->control); break;
+                            case ALLEGRO_KEY_D: joystick_unright(player1->control); break;
+                            case ALLEGRO_KEY_W: joystick_unup(player1->control); break;
+                            case ALLEGRO_KEY_S: joystick_undown(player1->control); break;
+                            
+                            case ALLEGRO_KEY_U: joystick_unpunch(player1->control); break;
+                            case ALLEGRO_KEY_I: joystick_unkick(player1->control); break;
+                            
+                            default: break;
+                        }
+                        
+                        if (!bot) { 
+                            switch (event.keyboard.keycode)
+                            {   
+                                case ALLEGRO_KEY_LEFT: joystick_unleft(player2->control); break;
+                                case ALLEGRO_KEY_RIGHT: joystick_unright(player2->control); break;
+                                case ALLEGRO_KEY_UP: joystick_unup(player2->control); break;
+                                case ALLEGRO_KEY_DOWN: joystick_undown(player2->control); break;
+                                
+                                case ALLEGRO_KEY_PAD_4: joystick_unpunch(player2->control); break;
+                                case ALLEGRO_KEY_PAD_5: joystick_unkick(player2->control); break;
+                                
+                                default: break;
+                            }  
+                        }     
+                    }
                     al_wait_for_event(queue, &event); 
                 }
                 
                 if (round_over) {
                     al_flush_event_queue(queue);
-                    reset(player1, player2);
+                    reset(player1, p1_sprites[STD], player2, p2_sprites[STD]);
                 }
                 
                 if (player1->wins > 1 || player2->wins > 1 || event.type == 42) {
@@ -750,6 +777,22 @@ int main(){
                 }
                    
             break;
+            case PAUSE:
+                al_draw_scaled_bitmap(pause_text, 0, 0, 113, 34, 161, 273, 678, 204, 0);
+                al_flip_display();
+                while (pause && event.type != 42) {
+                    al_wait_for_event(queue, &event); 
+                    if (event.type == ALLEGRO_EVENT_KEY_DOWN) 
+                        if (event.keyboard.keycode == ALLEGRO_KEY_P) 
+                            pause = 0;  
+                }
+                if (event.type == 42)
+                    close_display = 1;   
+                
+                al_flush_event_queue(queue);
+                
+                tela = GAME;
+            break;
             case OVER:
                 while (event.type != 42 && tela == OVER) {
                     if (event.type == 30) {
@@ -773,7 +816,7 @@ int main(){
         }
         if (close_display) break;
         
-        al_wait_for_event(queue, &event);              	
+        al_wait_for_event(queue, &event);  
     }
     
     al_destroy_bitmap(sprok_pt);

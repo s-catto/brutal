@@ -53,6 +53,7 @@ typedef struct {
     int vy;
     int state;
     int attk_state;
+    int cont;
     
     joystick *control;
 } mano;

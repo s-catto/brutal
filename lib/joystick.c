@@ -29,14 +29,28 @@ void joystick_reset(joystick *element){
     return;        
 }
 
-void joystick_left(joystick *element){ element->left = element->left ^ 1;}
+void joystick_left(joystick *element){ element->left = 1;}
 
-void joystick_right(joystick *element){ element->right = element->right ^ 1;}
+void joystick_right(joystick *element){ element->right = 1;}
 
-void joystick_up(joystick *element){ element->up = element->up ^ 1;}
+void joystick_up(joystick *element){ element->up = 1;}
 
-void joystick_down(joystick *element){ element->down = element->down ^ 1;}
+void joystick_down(joystick *element){ element->down = 1;}
 
-void joystick_punch(joystick *element){ element->punch = element->punch ^ 1;}
+void joystick_punch(joystick *element){ element->punch = 1;}
 
-void joystick_kick(joystick *element) { element->kick = element->kick ^ 1;}
+void joystick_kick(joystick *element) { element->kick = 1;}
+
+
+
+void joystick_unleft(joystick *element){ element->left = 0;}
+
+void joystick_unright(joystick *element){ element->right = 0;}
+
+void joystick_unup(joystick *element){ element->up = 0;}
+
+void joystick_undown(joystick *element){ element->down = 0;}
+
+void joystick_unpunch(joystick *element){ element->punch = 0;}
+
+void joystick_unkick(joystick *element) { element->kick = 0;}

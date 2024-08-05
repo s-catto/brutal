@@ -1,6 +1,6 @@
 oi efi :3
 
-TOTAL ATUAL: 50 + 10 + 15 + 30 = 105
+TOTAL ATUAL: 50 + 10 + 15 + 30 + 5 = 110
 AFAZERES BRUTAIS:
 
 --- Básicos (50pt) ---
@@ -21,8 +21,7 @@ AFAZERES BRUTAIS:
 --- """Extras""" ---
 - Telas:
     [X] 2 cenários                                  10pts
-    [/] Pause                                       5pts
-        - pensei em como fazer
+    [X] Pause                                       5pts
     
 - Ataques extra:
     [/] Ataques em pulo/ abaixado                   15pts

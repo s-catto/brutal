@@ -48,6 +48,7 @@ mano* mano_create(ALLEGRO_BITMAP* sq_sprite, ALLEGRO_BITMAP* sprite, char* name,
     new_mano->vy = 0;
     new_mano->state = STAND;
     new_mano->attk_state = NONE;
+    new_mano->cont = 0;
     
     new_mano->control = joystick_create();
     
