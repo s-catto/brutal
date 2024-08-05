@@ -12,7 +12,7 @@ all: brutal
 brutal: main.o libed 
 	$(CC) -o brutal $(OBJ)/*.o $(ALLEGRO)
 
-libed: joystick.o box.o mano.o personagens.o menu.o chselect.o
+libed: joystick.o box.o mano.o personagens.o menu.o chselect.o game.o
 
 main.o: main.c | $(OBJ)
 	$(CC) -c $(CFLAGS) $< -I $(INCLUDE) -o $(OBJ)/$@ 	 
