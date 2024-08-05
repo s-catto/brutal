@@ -27,24 +27,28 @@
 #define Y_SCREEN ((X_SCREEN / 4) * 3)
 
 int main(){
+    /*iniciando os addons*/
     al_init();	
     al_init_primitives_addon();
     al_init_font_addon();
     al_init_ttf_addon();
     al_init_image_addon();
-    
-    al_install_keyboard();
 	
+	/*instalando o teclado, criando o timer, a fila de eventos e o display*/
+    al_install_keyboard();
+    
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
     ALLEGRO_DISPLAY* disp = al_create_display(X_SCREEN, Y_SCREEN);
     
+    /*load da fonte*/
     ALLEGRO_FONT* font = al_load_font("./fonts/gameboy.ttf", 20, 0);
     if (!font) {
       printf("Error loading ./fonts/gameboy.ttf\n");
       return 2;
     }
 	
+	/*registrando as fontes de eventos*/
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(disp));
     al_register_event_source(queue, al_get_timer_event_source(timer));
@@ -68,12 +72,13 @@ int main(){
         switch (tela)
         {
             case MENU:
-                close_display = menu(queue, X_SCREEN, Y_SCREEN); 
+                close_display = menu(queue, font, X_SCREEN, Y_SCREEN); 
                 if (close_display)
                     break;
                 tela = CHSEL;
             break;
             case CHSEL:
+                bot = 0;
                 close_display = ch_select(font, queue, X_SCREEN, Y_SCREEN, 
                           p1_sprites, p2_sprites, &player1, &player2, &bot, &cenario);
                 
@@ -101,6 +106,7 @@ int main(){
         al_wait_for_event(queue, &event);  
     }
     
+    /*free dos TADS*/
     al_destroy_bitmap(cenario);
     al_destroy_font(font);
     al_destroy_display(disp);

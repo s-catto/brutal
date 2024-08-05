@@ -43,18 +43,22 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
     
     while (event.type != 42 && !selected) {
         if (event.type == 30) {
+            /*desenho da tela*/
+            /*fundo*/
             al_clear_to_color(al_map_rgb(69, 75, 27));
             
+            /*grade*/
             al_draw_filled_rectangle( GRID_X1, GRID_Y1, GRID_X2, GRID_Y2, al_map_rgb(0,0,0));
-            al_draw_filled_rectangle( SQ1_X1, SQ1_Y1, SQ1_X2, SQ1_Y2, ch_sq.cores[0]);
-            al_draw_scaled_bitmap(ch_sq.chrs[0], 0, 0, 24, 24, SQ1_X1, SQ1_Y1, 120, 120, 0);
-            al_draw_filled_rectangle( SQ2_X1, SQ2_Y1, SQ2_X2, SQ2_Y2, ch_sq.cores[1]);
-            al_draw_scaled_bitmap(ch_sq.chrs[1], 0, 0, 24, 24, SQ2_X1, SQ2_Y1, 120, 120, 0);
-            al_draw_filled_rectangle( SQ3_X1, SQ3_Y1, SQ3_X2, SQ3_Y2, ch_sq.cores[2]);
+            al_draw_filled_rectangle( SQ1_X1, SQ1_Y1, SQ1_X2, SQ1_Y2, ch_sq.cores[0]);          /*quadrado 1*/
+            al_draw_scaled_bitmap(ch_sq.chrs[0], 0, 0, 24, 24, SQ1_X1, SQ1_Y1, 120, 120, 0);    
+            al_draw_filled_rectangle( SQ2_X1, SQ2_Y1, SQ2_X2, SQ2_Y2, ch_sq.cores[1]);          /*quadrado 2*/
+            al_draw_scaled_bitmap(ch_sq.chrs[1], 0, 0, 24, 24, SQ2_X1, SQ2_Y1, 120, 120, 0);    
+            al_draw_filled_rectangle( SQ3_X1, SQ3_Y1, SQ3_X2, SQ3_Y2, ch_sq.cores[2]);          /*quadrado 3*/
             al_draw_scaled_bitmap(ch_sq.chrs[2], 0, 0, 24, 24, SQ3_X1, SQ3_Y1, 120, 120, 0);
-            al_draw_filled_rectangle( SQ4_X1, SQ4_Y1, SQ4_X2, SQ4_Y2, ch_sq.cores[3]);
+            al_draw_filled_rectangle( SQ4_X1, SQ4_Y1, SQ4_X2, SQ4_Y2, ch_sq.cores[3]);          /*quadrado 4*/
             al_draw_scaled_bitmap(ch_sq.chrs[3], 0, 0, 24, 24, SQ4_X1, SQ4_Y1, 120, 120, 0);
             
+            /*mostra a seleção de cenario*/
             if (sel_cen == S_CASA) {
                 al_draw_text(font, al_map_rgb(0, 0, 0), 500, max_y - 164, ALLEGRO_ALIGN_CENTER, "CASA DO JOREL");   
             } else if (sel_cen == S_LOCA) {
@@ -63,7 +67,7 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
                 al_draw_text(font, al_map_rgb(0, 0, 0), 500, max_y - 164, ALLEGRO_ALIGN_CENTER, "LOJA DE DISCOS DO REGINALDO");
             }
             
-            
+            /*mostra a seleção do modo*/
             if (*bot) {
                 al_draw_text(font, al_map_rgb(0, 255, 0), 500, max_y - 124, ALLEGRO_ALIGN_CENTER, "STEVE MAGAL DO FUTURO");
             } else {
@@ -72,8 +76,10 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
             al_flip_display();
         }
         if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+            /*tecla pressionada*/
             switch (event.keyboard.keycode)
             {
+                /*muda seleção de personagem do p1*/
                 case ALLEGRO_KEY_A: 
                     if ((ch_sq.p1 % 2) && (ch_sq.p1 - 1 != ch_sq.p2)) {
                         ch_sq.cores[ch_sq.p1] = COR_UNSEL;
@@ -103,7 +109,7 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
                     }
                 break;
                 
-                
+                /*muda seleção de personagem do p2*/
                 case ALLEGRO_KEY_LEFT: 
                     if (!*bot)
                         if ((ch_sq.p2 % 2) && (ch_sq.p2 - 1 != ch_sq.p1)) {
@@ -137,8 +143,11 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
                         }
                 break;
                 
+                /*muda a seleção do modo*/
                 case ALLEGRO_KEY_B: 
                     *bot = *bot ^ 1;
+                    /*não deixa a cor do p2 aparecer na grade 
+                    caso o bot tenha sido selecionado*/
                     if (*bot) {
                         ch_sq.cores[ch_sq.p2] = COR_UNSEL;
                     } else {
@@ -146,10 +155,12 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
                     }
                 break;
                 
+                /*muda a seleção de cenario*/
                 case ALLEGRO_KEY_C:
                     sel_cen = (sel_cen + 1) % 3;
                 break; 
                 
+                /*finaliza a selecao*/
                 case ALLEGRO_KEY_ENTER: 
                     selected = 1;
                 break;

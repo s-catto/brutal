@@ -22,14 +22,17 @@
 #define MENU_T9 "./sprites/menu/trans/titlet_09.png"
 #define MENU_T10 "./sprites/menu/trans/titlet_10.png"
 
-#define P_ENTER "./sprites/menu/p_enter.png"
-
+/*load dos bitmaps do menu*/
 void load_menu (ALLEGRO_BITMAP** menu);
 
+/*desenha o sprite atual do título*/
 int animate_menu (ALLEGRO_BITMAP** menu, int ini, int fim, int i);
 
-int menu (ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y);
+/*funcao principal, reage caso enter seja pressionado
+caso contrario, anima o menu*/
+int menu (ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_FONT* font, int max_x, int max_y);
 
+/*destroi os sprites do menu*/
 void destroy_menu (ALLEGRO_BITMAP** menu);
 
 #endif

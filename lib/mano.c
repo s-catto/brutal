@@ -59,14 +59,17 @@ void mano_move(mano *element, int steps, int trajectory,
                int max_x, int max_y)
 {
     if (!trajectory){ 
+        /*esquerda*/
         if ((element->x + element->hit->x - steps*MANO_STEP) - element->width/2 >= 0)
             element->x = element->x - steps*MANO_STEP;
     }
     else if (trajectory == 1){ 
+        /*direita*/
         if ((element->x + element->hit->x + steps*MANO_STEP) + element->width/2 <= max_x)
             element->x = element->x + steps*MANO_STEP;    
     }
     else if (trajectory == 2) {
+        /*cima*/
         if ((element->vy > 0 && (element->y + element->hit->y - element->vy * steps - element->height >= 0))
             || (element->vy < 0 && (element->y - element->vy * steps) <= max_y)) 
         {

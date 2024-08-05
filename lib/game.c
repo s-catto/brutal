@@ -18,29 +18,29 @@
 
 int collision (mano* player1, mano* player2, int tipo) {
     if (tipo == NORMAL) {
-        if ((((player1->x + player1->hit->x + player1->hit->width/2 > 
-               player2->x + player2->hit->x - player2->hit->width/2) && 
+        if ((((player1->x + player1->hit->x + player1->hit->width/2 >   /*colisão horizontal*/
+               player2->x + player2->hit->x - player2->hit->width/2) && /*p1 na esquerda*/
               (player1->x + player1->hit->x - player1->hit->width/2 <= 
                player2->x + player2->hit->x - player2->hit->width/2)) 
             || 
             ((player2->x + player2->hit->x + player2->hit->width/2 > 
-              player1->x + player2->hit->x - player1->hit->width/2) &&
+              player1->x + player2->hit->x - player1->hit->width/2) &&  /*p1 na direita*/
              (player2->x + player2->hit->x - player2->hit->width/2 <= 
               player1->x + player1->hit->x - player1->hit->width/2)))
             &&
-            (((player1->y + player1->hit->y > 
-               player2->y + player2->hit->y - player2->hit->height) &&
+            (((player1->y + player1->hit->y >                           /*colisão vertical*/
+               player2->y + player2->hit->y - player2->hit->height) &&  /*p1 em cima*/
              (player1->y + player1->hit->y - player1->hit->height <= 
               player2->y + player2->hit->y - player2->hit->height)) 
             || 
             ((player2->y + player2->hit->y > 
-              player1->y + player1->hit->y - player1->hit->height) &&
+              player1->y + player1->hit->y - player1->hit->height) &&   /*p1 em baixo*/
              (player2->y + player2->hit->y - player2->hit->height <= 
               player1->y + player1->hit->y - player1->hit->height))))
         {return 1;}
     } else if (tipo == HIT_P1) {
-        if ((((player1->x + player1->hit->x + player1->hit->width/2 > 
-               player2->x + player2->hurt->x - player2->hurt->width/2) && 
+        if ((((player1->x + player1->hit->x + player1->hit->width/2 >       /*segue o padrão*/
+               player2->x + player2->hurt->x - player2->hurt->width/2) &&   /*com a hurtbox do p2*/
               (player1->x + player1->hit->x - player1->hit->width/2 <= 
                player2->x + player2->hurt->x - player2->hurt->width/2)) 
             || 
@@ -60,8 +60,8 @@ int collision (mano* player1, mano* player2, int tipo) {
               player1->y + player1->hit->y - player1->hit->height))))
         {return 1;}          
     } else if (tipo == HIT_P2) {
-        if ((((player1->x + player1->hurt->x + player1->hurt->width/2 > 
-               player2->x + player2->hit->x - player2->hit->width/2) && 
+        if ((((player1->x + player1->hurt->x + player1->hurt->width/2 >     /*segue o padrão*/
+               player2->x + player2->hit->x - player2->hit->width/2) &&     /*com a hurtbox do p1*/
               (player1->x + player1->hurt->x - player1->hurt->width/2 <= 
                player2->x + player2->hit->x - player2->hit->width/2)) 
             || 
@@ -81,7 +81,7 @@ int collision (mano* player1, mano* player2, int tipo) {
               player1->y + player1->hurt->y - player1->hurt->height))))
         {return 1;}
     } else {
-        if ((((player1->x + player1->hit->x + player1->hit->width/2 > 
+        if ((((player1->x + player1->hit->x + player1->hit->width/2 >   /*só testa colisão horizontal*/
                player2->x + player2->hit->x - player2->hit->width/2) && 
               (player1->x + player1->hit->x - player1->hit->width/2 <= 
                player2->x + player2->hit->x - player2->hit->width/2)) 
@@ -350,11 +350,77 @@ void update_position (mano* player1, mano* player2, int max_x, int max_y) {
 
 void update_health (mano* player1, mano* player2) {
     if (collision(player1, player2, HIT_P1)) {
-        player1->health = player1->health - 2;
+        player1->health = player1->health - 1;
     }
     
     if (collision(player1, player2, HIT_P2)) {
-        player2->health = player2->health - 2;
+        player2->health = player2->health - 1;
+    }
+    
+    return;
+}
+
+void update_keys (ALLEGRO_EVENT event, mano* player1, mano* player2, int bot, int* pause) {
+    if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+        switch (event.keyboard.keycode)
+        {
+            case ALLEGRO_KEY_A: joystick_left(player1->control); break;
+            case ALLEGRO_KEY_D: joystick_right(player1->control); break;
+            case ALLEGRO_KEY_W: joystick_up(player1->control); break;
+            case ALLEGRO_KEY_S: joystick_down(player1->control); break;
+            
+            case ALLEGRO_KEY_U: joystick_punch(player1->control); break;
+            case ALLEGRO_KEY_I: joystick_kick(player1->control); break;
+            
+            default: break;
+        }
+        
+        if (!bot) { 
+            switch (event.keyboard.keycode)
+            {   
+                case ALLEGRO_KEY_LEFT: joystick_left(player2->control); break;
+                case ALLEGRO_KEY_RIGHT: joystick_right(player2->control); break;
+                case ALLEGRO_KEY_UP: joystick_up(player2->control); break;
+                case ALLEGRO_KEY_DOWN: joystick_down(player2->control); break;
+                
+                case ALLEGRO_KEY_PAD_4: joystick_punch(player2->control); break;
+                case ALLEGRO_KEY_PAD_5: joystick_kick(player2->control); break;
+                
+                default: break;
+            }  
+        }  
+        
+        if (event.keyboard.keycode == ALLEGRO_KEY_P) 
+            *pause = 1;
+            
+    } else if (event.type == ALLEGRO_EVENT_KEY_UP) {
+        switch (event.keyboard.keycode)
+        {
+            case ALLEGRO_KEY_A: joystick_unleft(player1->control); break;
+            case ALLEGRO_KEY_D: joystick_unright(player1->control); break;
+            case ALLEGRO_KEY_W: joystick_unup(player1->control); break;
+            case ALLEGRO_KEY_S: joystick_undown(player1->control); break;
+            
+            case ALLEGRO_KEY_U: joystick_unpunch(player1->control); break;
+            case ALLEGRO_KEY_I: joystick_unkick(player1->control); break;
+            
+            default: break;
+        }
+        
+        if (!bot) { 
+            switch (event.keyboard.keycode)
+            {   
+                case ALLEGRO_KEY_LEFT: joystick_unleft(player2->control); break;
+                case ALLEGRO_KEY_RIGHT: joystick_unright(player2->control); break;
+                case ALLEGRO_KEY_UP: joystick_unup(player2->control); break;
+                case ALLEGRO_KEY_DOWN: joystick_undown(player2->control); break;
+                
+                case ALLEGRO_KEY_PAD_4: joystick_unpunch(player2->control); break;
+                case ALLEGRO_KEY_PAD_5: joystick_unkick(player2->control); break;
+                
+                default: break;
+            }  
+        }
     }
     
     return;
@@ -590,10 +656,11 @@ int game (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                 round_over = 0;
                 pause = 0;
                 while (event.type != 42 && !round_over && !pause) {  
-                    /*batida do clock*/
                     if (event.type ==  30) {
+                    /*batida do clock*/
                         if (bot) 
-                        update_bot(player1, player2, max_x);
+                            update_bot(player1, player2, max_x);
+                        
                         update_facing_dir(player1, player2);
                         update_state(player1, p1_sprites, max_y);
                         update_state(player2, p2_sprites, max_y);
@@ -611,68 +678,11 @@ int game (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                             
                         }
                     }
-                    /*tecla pressionada ou solta*/
-                    else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-                        switch (event.keyboard.keycode)
-                        {
-                            case ALLEGRO_KEY_A: joystick_left(player1->control); break;
-                            case ALLEGRO_KEY_D: joystick_right(player1->control); break;
-                            case ALLEGRO_KEY_W: joystick_up(player1->control); break;
-                            case ALLEGRO_KEY_S: joystick_down(player1->control); break;
-                            
-                            case ALLEGRO_KEY_U: joystick_punch(player1->control); break;
-                            case ALLEGRO_KEY_I: joystick_kick(player1->control); break;
-                            
-                            default: break;
-                        }
-                        
-                        if (!bot) { 
-                            switch (event.keyboard.keycode)
-                            {   
-                                case ALLEGRO_KEY_LEFT: joystick_left(player2->control); break;
-                                case ALLEGRO_KEY_RIGHT: joystick_right(player2->control); break;
-                                case ALLEGRO_KEY_UP: joystick_up(player2->control); break;
-                                case ALLEGRO_KEY_DOWN: joystick_down(player2->control); break;
-                                
-                                case ALLEGRO_KEY_PAD_4: joystick_punch(player2->control); break;
-                                case ALLEGRO_KEY_PAD_5: joystick_kick(player2->control); break;
-                                
-                                default: break;
-                            }  
-                        }  
-                        
-                        if (event.keyboard.keycode == ALLEGRO_KEY_P) {
-                            pause = 1;
+                    else if (event.type == ALLEGRO_EVENT_KEY_DOWN ||event.type == ALLEGRO_EVENT_KEY_UP) {
+                        /*tecla pressionada ou solta*/
+                        update_keys(event, player1, player2, bot, &pause);        
+                        if (pause)
                             tela = PAUSE;
-                        }
-                    } else if (event.type == ALLEGRO_EVENT_KEY_UP) {
-                        switch (event.keyboard.keycode)
-                        {
-                            case ALLEGRO_KEY_A: joystick_unleft(player1->control); break;
-                            case ALLEGRO_KEY_D: joystick_unright(player1->control); break;
-                            case ALLEGRO_KEY_W: joystick_unup(player1->control); break;
-                            case ALLEGRO_KEY_S: joystick_undown(player1->control); break;
-                            
-                            case ALLEGRO_KEY_U: joystick_unpunch(player1->control); break;
-                            case ALLEGRO_KEY_I: joystick_unkick(player1->control); break;
-                            
-                            default: break;
-                        }
-                        
-                        if (!bot) { 
-                            switch (event.keyboard.keycode)
-                            {   
-                                case ALLEGRO_KEY_LEFT: joystick_unleft(player2->control); break;
-                                case ALLEGRO_KEY_RIGHT: joystick_unright(player2->control); break;
-                                case ALLEGRO_KEY_UP: joystick_unup(player2->control); break;
-                                case ALLEGRO_KEY_DOWN: joystick_undown(player2->control); break;
-                                
-                                case ALLEGRO_KEY_PAD_4: joystick_unpunch(player2->control); break;
-                                case ALLEGRO_KEY_PAD_5: joystick_unkick(player2->control); break;
-                                
-                                default: break;
-                            }  
-                        }     
                     }
                     al_wait_for_event(queue, &event); 
                 }
@@ -714,19 +724,23 @@ int game (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                 tela = MAIN;
             break;
             case OVER:
+                /*destruindo os personagens e seus bitmaps*/
                 mano_destroy(player1);
                 mano_destroy(player2);
                 for (int i = 0; i < 6; i++) {
                     al_destroy_bitmap(p1_sprites[i]);
                     al_destroy_bitmap(p2_sprites[i]);    
                 }
+                /*destruindo sprites do jogo*/
+                al_destroy_bitmap(sprok_pt);
+                al_destroy_bitmap(pause_text);
+                
+                /*mostrando a tela over e esperando enter*/
                 while (event.type != 42 && tela == OVER) {
                     if (event.type == 30) {
                         showOver(font, game_over, winner, max_x, max_y);
                     } else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
                         if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
-                            al_destroy_bitmap(sprok_pt);
-                            al_destroy_bitmap(pause_text);
                             al_destroy_bitmap(game_over);
                             return 0;
                         }
