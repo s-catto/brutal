@@ -13,6 +13,7 @@ typedef struct {
 
 joystick* joystick_create(); 
 void joystick_destroy(joystick *element);
+void joystick_reset(joystick *element);
 
 void joystick_right(joystick *element);
 void joystick_left(joystick *element);

@@ -46,6 +46,8 @@ mano* create_j_thomp (int isplayer2, int max_x, int max_y,
                       ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite);
 void load_j_thompson (ALLEGRO_BITMAP **p_sprites);
 
+/* MICROWAVE TOSTEX */
+
 #define M_TOSTX_H           320
 #define M_TOSTX_CR_H        255
 #define M_TOSTX_W           120
@@ -63,6 +65,8 @@ mano* create_m_tostx (int isplayer2, int max_x, int max_y,
                       ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite);
 void load_mwv_tostex (ALLEGRO_BITMAP **p_sprites);
 
+/* PALHAÇO RAMBOZO */
+
 #define P_RAMBO_H           320
 #define P_RAMBO_CR_H        255
 #define P_RAMBO_W           120
@@ -79,6 +83,22 @@ void load_mwv_tostex (ALLEGRO_BITMAP **p_sprites);
 mano* create_p_rambo (int isplayer2, int max_x, int max_y, 
                       ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite);
 void load_p_rambozo (ALLEGRO_BITMAP **p_sprites);
+
+/* STEVE MAGAL DO FUTURO */
+
+/* medidas são as mesmas do Steve normal*/
+
+#define S_FTURO_STD "./sprites/sFuturo/sprite_STD.png"
+#define S_FTURO_WLK "./sprites/sFuturo/sprite_WLK.png"
+#define S_FTURO_JMP "./sprites/sFuturo/sprite_JMP.png"
+#define S_FTURO_CRH "./sprites/sFuturo/sprite_CRH.png"
+#define S_FTURO_PUN "./sprites/sFuturo/sprite_PUN.png"
+#define S_FTURO_KIK "./sprites/sFuturo/sprite_KIK.png"
+
+
+mano* create_s_fturo (int isplayer2, int max_x, int max_y, 
+                      ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite);
+void load_s_futuro (ALLEGRO_BITMAP **p_sprites);
 
 /* geral */
 

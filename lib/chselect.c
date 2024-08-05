@@ -14,14 +14,15 @@ void load_chr_bitmaps(ALLEGRO_BITMAP **chrs) {
     chrs[0] = al_load_bitmap(CH_S_MAGAL); 
     chrs[1] = al_load_bitmap(CH_J_THOMP); 
     chrs[2] = al_load_bitmap(CH_P_RAMBO);
-    chrs[3] = al_load_bitmap(CH_M_TOSTX);  
+    chrs[3] = al_load_bitmap(CH_M_TOSTX); 
+    chrs[4] = al_load_bitmap(CH_S_FTURO);
     
     return;
 }
 
 int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                ALLEGRO_BITMAP** p1_sprites, ALLEGRO_BITMAP** p2_sprites,
-               mano** player1, mano** player2, int bot, ALLEGRO_BITMAP** cenario) {
+               mano** player1, mano** player2, int* bot, ALLEGRO_BITMAP** cenario) {
     
     ALLEGRO_EVENT event;
     al_wait_for_event(queue, &event);
@@ -63,7 +64,7 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
             }
             
             
-            if (bot) {
+            if (*bot) {
                 al_draw_text(font, al_map_rgb(0, 255, 0), 500, max_y - 124, ALLEGRO_ALIGN_CENTER, "STEVE MAGAL DO FUTURO");
             } else {
                 al_draw_text(font, al_map_rgb(0, 0, 0), 500, max_y - 124, ALLEGRO_ALIGN_CENTER, "STEVE MAGAL DO FUTURO");
@@ -74,66 +75,62 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
             switch (event.keyboard.keycode)
             {
                 case ALLEGRO_KEY_A: 
-                    if (ch_sq.p1 < 10)
-                        if (ch_sq.p1 % 2 && ch_sq.p1 - 1 != ch_sq.p2 % 10) {
-                            ch_sq.cores[ch_sq.p1] = COR_UNSEL;
-                            ch_sq.p1--; 
-                            ch_sq.cores[ch_sq.p1] = COR_P1;
-                        }
+                    if ((ch_sq.p1 % 2) && (ch_sq.p1 - 1 != ch_sq.p2)) {
+                        ch_sq.cores[ch_sq.p1] = COR_UNSEL;
+                        ch_sq.p1--; 
+                        ch_sq.cores[ch_sq.p1] = COR_P1;
+                    }
                 break;
                 case ALLEGRO_KEY_D: 
-                    if (ch_sq.p1 < 10)
-                        if (!(ch_sq.p1 % 2) && ch_sq.p1 + 1 != ch_sq.p2 % 10) {    
-                            ch_sq.cores[ch_sq.p1] = COR_UNSEL;
-                            ch_sq.p1++; 
-                            ch_sq.cores[ch_sq.p1] = COR_P1;
-                        }
+                    if (!(ch_sq.p1 % 2) && (ch_sq.p1 + 1 != ch_sq.p2)) {    
+                        ch_sq.cores[ch_sq.p1] = COR_UNSEL;
+                        ch_sq.p1++; 
+                        ch_sq.cores[ch_sq.p1] = COR_P1;
+                    }
                 break;
                 case ALLEGRO_KEY_W: 
-                    if (ch_sq.p1 < 10)
-                        if ((ch_sq.p1 > 1) && ch_sq.p1 - 2 != ch_sq.p2 % 10) { 
-                            ch_sq.cores[ch_sq.p1] = COR_UNSEL;
-                            ch_sq.p1 = ch_sq.p1 - 2; 
-                            ch_sq.cores[ch_sq.p1] = COR_P1;
-                        }
+                    if ((ch_sq.p1 > 1) && (ch_sq.p1 - 2 != ch_sq.p2)) { 
+                        ch_sq.cores[ch_sq.p1] = COR_UNSEL;
+                        ch_sq.p1 = ch_sq.p1 - 2; 
+                        ch_sq.cores[ch_sq.p1] = COR_P1;
+                    }
                 break;
                 case ALLEGRO_KEY_S:
-                    if (ch_sq.p1 < 10)
-                        if ((ch_sq.p1 <= 1) && ch_sq.p1 + 2 != ch_sq.p2 % 10) { 
-                            ch_sq.cores[ch_sq.p1] = COR_UNSEL;
-                            ch_sq.p1 = ch_sq.p1 + 2; 
-                            ch_sq.cores[ch_sq.p1] = COR_P1;
-                        }
+                    if ((ch_sq.p1 <= 1) && (ch_sq.p1 + 2 != ch_sq.p2)) { 
+                        ch_sq.cores[ch_sq.p1] = COR_UNSEL;
+                        ch_sq.p1 = ch_sq.p1 + 2; 
+                        ch_sq.cores[ch_sq.p1] = COR_P1;
+                    }
                 break;
                 
                 
                 case ALLEGRO_KEY_LEFT: 
-                    if (ch_sq.p2 < 10)
-                        if (ch_sq.p2 % 2 && ch_sq.p2 - 1 != ch_sq.p1 % 10) {
+                    if (!*bot)
+                        if ((ch_sq.p2 % 2) && (ch_sq.p2 - 1 != ch_sq.p1)) {
                             ch_sq.cores[ch_sq.p2] = COR_UNSEL;
                             ch_sq.p2--; 
                             ch_sq.cores[ch_sq.p2] = COR_P2;
                         }
                 break;
                 case ALLEGRO_KEY_RIGHT: 
-                    if (ch_sq.p2 < 10)
-                        if (!(ch_sq.p2 % 2) && ch_sq.p2 + 1 != ch_sq.p1 % 10) {    
+                    if (!*bot)
+                        if (!(ch_sq.p2 % 2) && (ch_sq.p2 + 1 != ch_sq.p1)) {    
                             ch_sq.cores[ch_sq.p2] = COR_UNSEL;
                             ch_sq.p2++; 
                             ch_sq.cores[ch_sq.p2] = COR_P2;
                         }
                 break;
                 case ALLEGRO_KEY_UP:
-                    if (ch_sq.p2 < 10)
-                        if ((ch_sq.p2 > 1) && ch_sq.p2 - 2 != ch_sq.p1 % 10) { 
+                    if (!*bot)
+                        if ((ch_sq.p2 > 1) && (ch_sq.p2 - 2 != ch_sq.p1)) { 
                             ch_sq.cores[ch_sq.p2] = COR_UNSEL;
                             ch_sq.p2 = ch_sq.p2 - 2; 
                             ch_sq.cores[ch_sq.p2] = COR_P2;
                         }
                 break;
                 case ALLEGRO_KEY_DOWN:
-                    if (ch_sq.p2 < 10)
-                        if ((ch_sq.p2 <= 1) && ch_sq.p2 + 2 != ch_sq.p1 % 10) { 
+                    if (!*bot)
+                        if ((ch_sq.p2 <= 1) && (ch_sq.p2 + 2 != ch_sq.p1)) { 
                             ch_sq.cores[ch_sq.p2] = COR_UNSEL;
                             ch_sq.p2 = ch_sq.p2 + 2; 
                             ch_sq.cores[ch_sq.p2] = COR_P2;
@@ -141,7 +138,12 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
                 break;
                 
                 case ALLEGRO_KEY_B: 
-                    bot = bot ^ 1;
+                    *bot = *bot ^ 1;
+                    if (*bot) {
+                        ch_sq.cores[ch_sq.p2] = COR_UNSEL;
+                    } else {
+                        ch_sq.cores[ch_sq.p2] = COR_P2;
+                    }
                 break;
                 
                 case ALLEGRO_KEY_C:
@@ -177,23 +179,29 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
         
         *player1 = create_m_tostx(0, max_x, max_y, p1_sprites[0], ch_sq.chrs[3]);
     }
-        
-    if (ch_sq.p2 == 0) {
-        load_s_magal(p2_sprites);
-        
-        *player2 = create_s_magal(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[0]);
-    } else if (ch_sq.p2 == 1) {
-        load_j_thompson(p2_sprites);
-        
-        *player2 = create_j_thomp(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[1]);
-    } else if (ch_sq.p2 == 2) {
-        load_p_rambozo(p2_sprites);
-        
-        *player2 = create_p_rambo(0, max_x, max_y, p2_sprites[0], ch_sq.chrs[2]);
-    } else if (ch_sq.p2 == 3) {
-        load_mwv_tostex(p2_sprites);
-        
-        *player2 = create_m_tostx(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[3]);
+    
+    if (*bot) {
+        load_s_futuro(p2_sprites);
+            
+        *player2 = create_s_fturo(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[4]);    
+    } else {   
+        if (ch_sq.p2 == 0) {
+            load_s_magal(p2_sprites);
+            
+            *player2 = create_s_magal(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[0]);
+        } else if (ch_sq.p2 == 1) {
+            load_j_thompson(p2_sprites);
+            
+            *player2 = create_j_thomp(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[1]);
+        } else if (ch_sq.p2 == 2) {
+            load_p_rambozo(p2_sprites);
+            
+            *player2 = create_p_rambo(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[2]);
+        } else if (ch_sq.p2 == 3) {
+            load_mwv_tostex(p2_sprites);
+            
+            *player2 = create_m_tostx(1, max_x, max_y, p2_sprites[0], ch_sq.chrs[3]);
+        }
     }
     
     /*load do cenário*/
@@ -213,7 +221,7 @@ int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int ma
 }
 
 void destroy_chr_bitmaps(ALLEGRO_BITMAP **chrs) {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
         al_destroy_bitmap(chrs[i]);
     
     return;

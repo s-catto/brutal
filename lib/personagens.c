@@ -130,6 +130,37 @@ void load_p_rambozo (ALLEGRO_BITMAP **p_sprites) {
     return;    
 }
 
+/* Steve Magal do Futuro */
+mano* create_s_fturo (int isplayer2, int max_x, int max_y, 
+                      ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* sq_sprite) {
+    if (isplayer2) {
+        mano* player = mano_create(sq_sprite, sprite, "STEVE MAGAL DO FUTURO", 
+                       S_MAGAL_W, S_MAGAL_H,
+                       max_x - S_MAGAL_SPRX_L, max_y, 
+                       max_x, max_y, 
+                       LEFT, S_MAGAL_SPRX_L, S_MAGAL_SPRX_R, S_MAGAL_CR_H);
+        return player;
+    }
+    mano* player = mano_create(sq_sprite, sprite, "STEVE MAGAL DO FUTURO",
+                   S_MAGAL_W, S_MAGAL_H, 
+                   - S_MAGAL_SPRX_R, max_y, 
+                   max_x, max_y, 
+                   RIGHT, S_MAGAL_SPRX_L, S_MAGAL_SPRX_R, S_MAGAL_CR_H);
+   
+   return player;   
+}
+
+void load_s_futuro (ALLEGRO_BITMAP **p_sprites) {
+    p_sprites[0] = al_load_bitmap(S_FTURO_STD);
+    p_sprites[1] = al_load_bitmap(S_FTURO_WLK);
+    p_sprites[2] = al_load_bitmap(S_FTURO_JMP);
+    p_sprites[3] = al_load_bitmap(S_FTURO_CRH);
+    p_sprites[4] = al_load_bitmap(S_FTURO_PUN);
+    p_sprites[5] = al_load_bitmap(S_FTURO_KIK);
+    
+    return;       
+}
+
 /* geral */
 void destroy_sprites(ALLEGRO_BITMAP** p_sprites) {
     for (int i = 0; i < 4; i++)

@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>	
+#include <time.h>
 
 #include "include/joystick.h"
 #include "include/box.h"
@@ -97,6 +98,17 @@ int collision (mano* player1, mano* player2, int tipo) {
               player1->y + player1->hurt->y - player1->hurt->height) &&
              (player2->y + player2->hit->y - player2->hit->height <= 
               player1->y + player1->hurt->y - player1->hurt->height))))
+        {return 1;}
+    } else {
+        if ((((player1->x + player1->hit->x + player1->hit->width/2 > 
+               player2->x + player2->hit->x - player2->hit->width/2) && 
+              (player1->x + player1->hit->x - player1->hit->width/2 <= 
+               player2->x + player2->hit->x - player2->hit->width/2)) 
+            || 
+            ((player2->x + player2->hit->x + player2->hit->width/2 > 
+              player1->x + player2->hit->x - player1->hit->width/2) &&
+             (player2->x + player2->hit->x - player2->hit->width/2 <= 
+              player1->x + player1->hit->x - player1->hit->width/2))))
         {return 1;}
     }
     
@@ -359,6 +371,73 @@ void update_health (mano* player1, mano* player2) {
     return;
 }
 
+void update_bot (mano* player1, mano* player2, int cont) {
+    if (collision(player1, player2, -1)) {
+        if (player2->x - 0 < X_SCREEN - player2->x && player2->x >= player1->x) {
+            if (player2->control->left)
+                joystick_left(player2->control); 
+            if (!player2->control->right)
+                joystick_right(player2->control);
+        } else {
+            if (!player2->control->left)
+                joystick_left(player2->control); 
+            if (player2->control->right)
+                joystick_right(player2->control);
+        } 
+    } else {
+        if (player2->face == LEFT) {
+            if (player2->control->right)
+                joystick_right(player2->control);   
+            if (!player2->control->left && player2->y >= player1->y - player1->height)
+                joystick_left(player2->control);    
+        } else {
+            if (player2->control->left)
+                joystick_left(player2->control); 
+            if (!player2->control->right && player2->y >= player1->y - player1->height)
+                joystick_right(player2->control);
+        }
+    }
+    
+    if (!player2->control->punch && !player2->control->kick && !player2->control->up && !player2->control->down) {
+        switch (rand() % 4) {
+            case 0:
+                if (!(rand() % 17)) 
+                    joystick_punch(player2->control);
+            break;
+            case 1:
+                if (!(rand() % 17)) 
+                    joystick_kick(player2->control);
+            break;
+            case 2:
+                if (!(rand() % 23)) 
+                    joystick_up(player2->control);
+            break;
+            case 3:
+                if (!(rand() % 23)) 
+                    joystick_down(player2->control);
+            break;
+            
+            default: break;
+        }
+    } else {  
+        if (player2->control->punch) {
+            if (!(cont % 11))
+                joystick_punch(player2->control);
+        } else if (player2->control->kick){
+            if (!(cont % 11))
+                joystick_kick(player2->control);
+        } else if (player2->control->up){
+            if (!(cont % 7))
+                joystick_up(player2->control);
+        } else {
+            if (!(cont % 11))
+                joystick_down(player2->control);   
+        }
+    }
+    
+    return;
+}
+
 void reset (mano* player1, mano* player2) {
     /*reset health*/
     player1->health = 100;
@@ -382,6 +461,11 @@ void reset (mano* player1, mano* player2) {
     player2->attk_state = NONE;
     player1->vy = 0;
     player2->vy = 0;
+    
+    joystick_reset(player1->control);
+    joystick_reset(player2->control);
+    
+    return;
 }
 
 void showGame (ALLEGRO_FONT *font, mano* player1, mano* player2, ALLEGRO_BITMAP *sprok_pt, ALLEGRO_BITMAP* cenario) {
@@ -541,6 +625,8 @@ int main(){
     ALLEGRO_EVENT event;
     al_start_timer(timer);
     al_wait_for_event(queue, &event);
+    srand(time(0));
+    int cont = rand() % 71;
     
     int close_display = 0;
     int tela = MENU;
@@ -568,7 +654,7 @@ int main(){
             break;
             case CHSEL:
                 close_display = ch_select(font, queue, X_SCREEN, Y_SCREEN, 
-                          p1_sprites, p2_sprites, &player1, &player2, bot, &cenario);
+                          p1_sprites, p2_sprites, &player1, &player2, &bot, &cenario);
                 
                 if(close_display)
                     break;
@@ -585,6 +671,9 @@ int main(){
                 while (event.type != 42 && !round_over) {        
                     /*batida do clock*/
                     if (event.type ==  30) {
+                        cont++;
+                        if (bot) 
+                             update_bot(player1, player2, cont);
                         update_facing_dir(player1, player2);
                         update_state(player1, p1_sprites);
                         update_state(player2, p2_sprites);
@@ -613,25 +702,29 @@ int main(){
                             
                             case ALLEGRO_KEY_U: joystick_punch(player1->control); break;
                             case ALLEGRO_KEY_I: joystick_kick(player1->control); break;
-                            
-                            
-                            case ALLEGRO_KEY_LEFT: joystick_left(player2->control); break;
-                            case ALLEGRO_KEY_RIGHT: joystick_right(player2->control); break;
-                            case ALLEGRO_KEY_UP: joystick_up(player2->control); break;
-                            case ALLEGRO_KEY_DOWN: joystick_down(player2->control); break;
-                            
-                            case ALLEGRO_KEY_PAD_4: joystick_punch(player2->control); break;
-                            case ALLEGRO_KEY_PAD_5: joystick_kick(player2->control); break;
-                            
-                            default: break;
-                        }    
+                        }
+                        
+                        if (!bot) { 
+                            switch (event.keyboard.keycode)
+                            {   
+                                case ALLEGRO_KEY_LEFT: joystick_left(player2->control); break;
+                                case ALLEGRO_KEY_RIGHT: joystick_right(player2->control); break;
+                                case ALLEGRO_KEY_UP: joystick_up(player2->control); break;
+                                case ALLEGRO_KEY_DOWN: joystick_down(player2->control); break;
+                                
+                                case ALLEGRO_KEY_PAD_4: joystick_punch(player2->control); break;
+                                case ALLEGRO_KEY_PAD_5: joystick_kick(player2->control); break;
+                                
+                                default: break;
+                            }  
+                        }  
                     } 
                     al_wait_for_event(queue, &event); 
                 }
                 
                 if (round_over) {
-                    reset(player1, player2);
                     al_flush_event_queue(queue);
+                    reset(player1, player2);
                 }
                 
                 if (player1->wins > 1 || player2->wins > 1 || event.type == 42) {

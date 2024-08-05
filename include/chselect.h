@@ -5,6 +5,7 @@
 #define CH_J_THOMP  "./sprites/ch_sel/j_thomp.png"
 #define CH_P_RAMBO  "./sprites/ch_sel/p_rambo.png"
 #define CH_M_TOSTX  "./sprites/ch_sel/m_tostx.png"
+#define CH_S_FTURO  "./sprites/ch_sel/s_fturo.png"
 
 #define CASA "./sprites/cenarios/casa.jpg"
 #define LOCA "./sprites/cenarios/locadora.jpg"
@@ -48,7 +49,7 @@
 
 typedef struct {
     ALLEGRO_COLOR cores[4];   
-    ALLEGRO_BITMAP *chrs[4];
+    ALLEGRO_BITMAP *chrs[5];
     int p1;
     int p2;   
 } character_square;
@@ -57,7 +58,7 @@ void load_chr_bitmaps(ALLEGRO_BITMAP **chrs);
 
 int ch_select (ALLEGRO_FONT* font, ALLEGRO_EVENT_QUEUE* queue, int max_x, int max_y,
                ALLEGRO_BITMAP** p1_sprites, ALLEGRO_BITMAP** p2_sprites,
-               mano** player1, mano** player2, int bot, ALLEGRO_BITMAP** cenario);
+               mano** player1, mano** player2, int* bot, ALLEGRO_BITMAP** cenario);
 
 void destroy_chr_bitmaps(ALLEGRO_BITMAP **chrs);
 
