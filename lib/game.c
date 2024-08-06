@@ -430,24 +430,24 @@ void update_bot (mano* player1, mano* player2, int max_x) {
     if (collision(player1, player2, -1)) {
         if (player2->x - 0 < max_x - player2->x && player2->x >= player1->x) {
             if (player2->control->left)
-                joystick_left(player2->control); 
+                joystick_unleft(player2->control); 
             if (!player2->control->right)
                 joystick_right(player2->control);
         } else {
             if (!player2->control->left)
                 joystick_left(player2->control); 
             if (player2->control->right)
-                joystick_right(player2->control);
+                joystick_unright(player2->control);
         } 
     } else {
         if (player2->face == LEFT) {
             if (player2->control->right)
-                joystick_right(player2->control);   
+                joystick_unright(player2->control);   
             if (!player2->control->left && player2->y >= player1->y - player1->height)
                 joystick_left(player2->control);    
         } else {
             if (player2->control->left)
-                joystick_left(player2->control); 
+                joystick_unleft(player2->control); 
             if (!player2->control->right && player2->y >= player1->y - player1->height)
                 joystick_right(player2->control);
         }
@@ -477,16 +477,16 @@ void update_bot (mano* player1, mano* player2, int max_x) {
     } else {  
         if (player2->control->punch) {
             if (!(rand() % 11))
-                joystick_punch(player2->control);
+                joystick_unpunch(player2->control);
         } else if (player2->control->kick){
             if (!(rand() % 11))
-                joystick_kick(player2->control);
+                joystick_unkick(player2->control);
         } else if (player2->control->up){
             if (!(rand() % 7))
-                joystick_up(player2->control);
+                joystick_unup(player2->control);
         } else {
             if (!(rand() % 11))
-                joystick_down(player2->control);   
+                joystick_undown(player2->control);   
         }
     }
     
