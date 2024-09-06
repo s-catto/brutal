@@ -2,6 +2,8 @@
 <img src= "./sprites/menu/titulo/title_00.png" >
 </p>
 
+# BRUTAL KOMBAT
+
 **TOTAL ATUAL:** 50 + 10 + 15 + 30 + 5 = 110
 <!-- 
     tirei 90, entreguei com um errinho no bot :(
