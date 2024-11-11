@@ -3,6 +3,28 @@
 </p>
 
 # BRUTAL KOMBAT
+btw tem que baixar a biblioteca allegro 
+<br>
+**CONTROLES**
+<br>
+MENU:
+- P1 escolhe: WASD
+- P2 escolhe: setas
+- Jogar: Enter
+- Mudar cenário: C
+- (Des)ativar bot: B
+
+P1: 
+- Mover: WASD
+- SOCO: U
+- CHUTE: I
+
+P2:
+- Mover: setas
+- SOCO: 4 (teclado numérico) 
+- CHUTE: 5 (teclado numérico)
+
+---
 
 **TOTAL ATUAL:** 50 + 10 + 15 + 30 + 5 = 110
 <!-- 
